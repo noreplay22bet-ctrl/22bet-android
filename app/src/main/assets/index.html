@@ -15761,6 +15761,18 @@ function renderEmailCalendar() {
         if (index > 0) { pendingBack = true; history.back(); }
         else if (typeof showHome === "function") showHome();
     }
+    // Android consumes Back while a page or popup has a previous entry.
+    window.androidHandleBack = function () {
+        if (document.body.classList.contains("app-loading")) return true;
+        if (pendingBack) return true;
+        record();
+        if (pendingBack) return true;
+        if (index > 0) {
+            back();
+            return true;
+        }
+        return false; // Native double-Back exit only at the root.
+    };
     window.appBack = back;
     window.openAppPage = function (id) { switchPage(id); };
     window.pushAppHistory = function (id) { switchPage(id); };
