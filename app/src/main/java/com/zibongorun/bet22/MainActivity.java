@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Build;
 import android.view.View;
+import android.view.WindowInsets;
+import android.widget.FrameLayout;
 import android.view.WindowInsetsController;
 import android.webkit.*;
 import android.content.*;
@@ -16,6 +18,7 @@ import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private WebView web;
+    private FrameLayout root;
     private long lastBack;
     private boolean splashBars = true;
     private static final String ORIGIN = "https://appassets.androidplatform.net";
@@ -26,6 +29,7 @@ public class MainActivity extends Activity {
         getWindow().setNavigationBarColor(
             !splashBars && Build.VERSION.SDK_INT < 26 ? Color.BLACK : color);
         getWindow().getDecorView().setBackgroundColor(color);
+        if (root != null) root.setBackgroundColor(color);
         if (Build.VERSION.SDK_INT >= 29) {
             getWindow().setStatusBarContrastEnforced(false);
             getWindow().setNavigationBarContrastEnforced(false);
@@ -49,7 +53,22 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         applySystemBars();
         web = new WebView(this);
-        setContentView(web);
+        root = new FrameLayout(this);
+        root.addView(web, new FrameLayout.LayoutParams(-1, -1));
+        setContentView(root);
+        if (Build.VERSION.SDK_INT >= 30) {
+            // Paint our own bar backgrounds, including Android 15 edge-to-edge.
+            getWindow().setDecorFitsSystemWindows(false);
+            root.setOnApplyWindowInsetsListener((view, insets) -> {
+                android.graphics.Insets bars = insets.getInsets(
+                    WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                android.graphics.Insets keyboard = insets.getInsets(WindowInsets.Type.ime());
+                view.setPadding(bars.left, bars.top, bars.right,
+                    Math.max(bars.bottom, keyboard.bottom));
+                return insets;
+            });
+            root.requestApplyInsets();
+        }
         applySystemBars();
         web.setBackgroundColor(Color.rgb(12,62,68));
         web.getSettings().setJavaScriptEnabled(true);
