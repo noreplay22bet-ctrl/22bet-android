@@ -18,7 +18,7 @@
     body.app-loading { overflow:hidden !important; background:#0c3e44 !important; }
     body.app-loading #app-shell { visibility:hidden; pointer-events:none; }
     #loading-screen { position:fixed; inset:0; width:100%; height:100%; background-color:#0c3e44;
-        background-image:url('splash.jpg');
+        background-image:url('https://raw.githubusercontent.com/mdripon018770-coder/Notbok/main/l.jpg');
         background-size:100% 100%; background-repeat:no-repeat; background-position:center;
         z-index:2147483647; display:flex; flex-direction:column; align-items:center; justify-content:center;
         font-family:sans-serif; }
@@ -14277,11 +14277,6 @@ async function copyInfo() {
     const label = document.getElementById("copyText");
     if (!userEl || !passEl) return;
     const text = `Username: ${userEl.innerText}\nPassword: ${passEl.innerText}`;
-    if (window.NativeApp) {
-        NativeApp.postMessage(JSON.stringify({action:"copy", text:text}));
-        if (label) { label.innerText = "Copied!"; setTimeout(() => label.innerText = "Copy", 2000); }
-        return;
-    }
     let copied = false;
     if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
         try { await navigator.clipboard.writeText(text); copied = true; }
@@ -15136,10 +15131,6 @@ async function shareInfo() {
         title: "22BET Account Info",
         text: `22BET Account Info:\nUsername: ${userEl.innerText}\nPassword: ${passEl.innerText}`
     };
-    if (window.NativeApp) {
-        NativeApp.postMessage(JSON.stringify({action:"share", text:data.text}));
-        return;
-    }
     // Call directly from the button tap to retain the browser's user activation.
     if (typeof navigator.share === "function") {
         try {
@@ -15771,12 +15762,6 @@ function renderEmailCalendar() {
         else if (typeof showHome === "function") showHome();
     }
     window.appBack = back;
-    window.androidHandleBack = function () {
-        if (document.body.classList.contains("app-loading")) return true;
-        record();
-        if (index > 0 || pendingBack) { back(); return true; }
-        return false;
-    };
     window.openAppPage = function (id) { switchPage(id); };
     window.pushAppHistory = function (id) { switchPage(id); };
     ["safeLoginBack", "safeRegisterBack", "hideLogin", "hideDepositPage",
@@ -15873,6 +15858,17 @@ function renderEmailCalendar() {
 <script>
 /* One-file startup: first-visit splash; returning users open Home directly. */
 (function () {
+    function syncSystemBars() {
+        const loading = document.body && document.body.classList.contains("app-loading") &&
+            !document.documentElement.classList.contains("app-returning");
+        const color = loading ? "#0c3e44" : "#FFFFFF";
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = color;
+        if (window.NativeApp && typeof window.NativeApp.postMessage === "function") {
+            window.NativeApp.postMessage(JSON.stringify({action:"systemBars", splash:!!loading}));
+        }
+    }
+    window.syncAndroidSystemBars = syncSystemBars;
     function finishLoading() {
         const loggedIn = localStorage.getItem("is_logged_in") === "true";
         // Select the root while the splash still covers the app.
@@ -15887,6 +15883,7 @@ function renderEmailCalendar() {
         shell.removeAttribute("aria-hidden");
         document.body.classList.remove("app-loading");
         document.getElementById("loading-screen").remove();
+        syncSystemBars();
     }
     function startLoadingSequence() {
         const totalBalls = 8;
@@ -15911,6 +15908,7 @@ function renderEmailCalendar() {
         runSequence(1);
     }
     function startApp() {
+        syncSystemBars();
         if (localStorage.getItem("hasVisitedBefore") === "true" || localStorage.getItem("is_logged_in") === "true") {
             finishLoading();
         } else startLoadingSequence();
