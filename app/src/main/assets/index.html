@@ -11,31 +11,24 @@
     }
     </script>
 
-    <meta name="theme-color" content="#0c3e44">
+    <meta name="theme-color" content="#033337">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
     html.app-returning #loading-screen { display:none !important; }
-    body.app-loading { overflow:hidden !important; background:#0c3e44 !important; }
+    body.app-loading { overflow:hidden !important; background:#033337 !important; }
     body.app-loading #app-shell { visibility:hidden; pointer-events:none; }
-    #loading-screen { position:fixed; inset:0; width:100%; height:100%; background-color:#0c3e44;
-        background-image:url('https://raw.githubusercontent.com/mdripon018770-coder/Notbok/main/l.jpg');
+    #loading-screen { position:fixed; inset:0; width:100%; height:100%; background-color:#033337;
+        background-image:url('splash.png');
         background-size:100% 100%; background-repeat:no-repeat; background-position:center;
         z-index:2147483647; display:flex; flex-direction:column; align-items:center; justify-content:center;
         font-family:sans-serif; }
-    #loading-screen .progress-container { display:flex; gap:16px; align-items:center; justify-content:center;
-        position:absolute; top:62%; left:50%; transform:translateX(-50%); width:auto; white-space:nowrap; }
-    #loading-screen .ball { font-size:14px; color:#fff; opacity:.7; transition:opacity .4s ease,color .4s ease;
-        display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; box-sizing:border-box; flex-shrink:0; }
-    #loading-screen .ball svg { display:block; width:100%; height:100%; }
-    #loading-screen .eight-ball { font-weight:bold; font-size:10px; border-radius:50%; background:#fff;
-        color:#000; text-align:center; line-height:16px; border:1.5px solid rgba(255,255,255,.25); transition:all .3s ease; }
-    #loading-screen .ball.revealed { opacity:.85; }
-    #loading-screen .eight-ball.revealed { border-color:rgba(255,255,255,.85); }
-    #loading-screen .active-spinning { opacity:1 !important; color:#fff !important; animation:splashRotateBall .7s linear infinite; }
-    #loading-screen .eight-ball.active-spinning { background:#fff !important; color:#000 !important;
-        border-color:#fff !important; box-shadow:0 0 8px rgba(255,255,255,.8); }
-    #loading-screen .stopping-style { transition:transform .8s cubic-bezier(.1,1,.1,1); }
-    @keyframes splashRotateBall { 0% {transform:scale(1.1) rotate(0deg)} 100% {transform:scale(1.1) rotate(360deg)} }
+    #loading-screen .progress-container { display:flex; gap:12px; align-items:center; justify-content:center; position:absolute; top:54%; left:50%; transform:translateX(-50%); }
+    #loading-screen .ball { position:relative; width:20px; height:20px; flex-shrink:0; border-radius:50%; background:#355e62; }
+    #loading-screen .ball img { display:block; width:100%; height:100%; object-fit:contain; visibility:hidden; }
+    #loading-screen .ball.revealed { background:transparent; }
+    #loading-screen .ball.revealed img { visibility:visible; }
+    #loading-screen .ball.active-spinning img { animation:splashRotateBall .7s linear infinite; }
+    @keyframes splashRotateBall { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
     #loading-screen .version-info { position:absolute; bottom:22px; right:22px; color:#fff; font-size:12px; opacity:.85; }
     </style>
 
@@ -134,14 +127,14 @@ document.addEventListener('DOMContentLoaded',refreshGuestViews);
 
 <div id="loading-screen" role="status" aria-label="অ্যাপ লোড হচ্ছে">
     <div class="progress-container" aria-hidden="true">
-        <div id="b1" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 8 7l2 5h5l3-5-6-5ZM8 7 3 8m7 4-3 6m8-6 5 4M7 18l5 4 6-4M3 8l-1 7 5 3m13-2 2-7-4-2"/></g></svg></div>
-        <div id="b2" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M12 2v20M5 4c9 4 9 12 14 16M19 4C10 8 10 16 5 20"/></g></svg></div>
-        <div id="b3" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3c9 5-2 13 12 18M18 3C9 8 20 16 6 21"/></g></svg></div>
-        <div id="b4" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 6-4 9 0 10m10 0c-6-4-9-4-10 0m0 10c4-6 4-9 0-10M2 12c6 4 9 4 10 0M5 5l7 7 7 7"/></g></svg></div>
-        <div id="b5" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 8 7l2 5h5l3-5-6-5ZM8 7 3 8m7 4-3 6m8-6 5 4M7 18l5 4 6-4M3 8l-1 7 5 3m13-2 2-7-4-2"/></g></svg></div>
-        <div id="b6" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M12 2v20M5 4c9 4 9 12 14 16M19 4C10 8 10 16 5 20"/></g></svg></div>
-        <div id="b7" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3c9 5-2 13 12 18M18 3C9 8 20 16 6 21"/></g></svg></div>
-        <div id="b8" class="ball"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="#0c3e44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c-4 6-4 9 0 10m10 0c-6-4-9-4-10 0m0 10c4-6 4-9 0-10M2 12c6 4 9 4 10 0M5 5l7 7 7 7"/></g></svg></div>
+        <div id="b1" class="ball"><img src="ball-1.png" alt="" decoding="sync"></div>
+        <div id="b2" class="ball"><img src="ball-2.png" alt="" decoding="sync"></div>
+        <div id="b3" class="ball"><img src="ball-3.png" alt="" decoding="sync"></div>
+        <div id="b4" class="ball"><img src="ball-4.png" alt="" decoding="sync"></div>
+        <div id="b5" class="ball"><img src="ball-5.png" alt="" decoding="sync"></div>
+        <div id="b6" class="ball"><img src="ball-6.png" alt="" decoding="sync"></div>
+        <div id="b7" class="ball"><img src="ball-7.png" alt="" decoding="sync"></div>
+        <div id="b8" class="ball"><img src="ball-8.png" alt="" decoding="sync"></div>
     </div>
     <div class="version-info">22Bet v.256.0.4</div>
 </div>
@@ -15835,7 +15828,7 @@ function renderEmailCalendar() {
     function syncSystemBars() {
         const loading = document.body && document.body.classList.contains("app-loading") &&
             !document.documentElement.classList.contains("app-returning");
-        const color = loading ? "#0c3e44" : "#edf3f7";
+        const color = loading ? "#033337" : "#edf3f7";
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.content = color;
         if (window.NativeApp && typeof window.NativeApp.postMessage === "function") {
@@ -15860,26 +15853,21 @@ function renderEmailCalendar() {
         syncSystemBars();
     }
     function startLoadingSequence() {
-        const totalBalls = 8;
-        const ballActiveTime = 2200;
-        function runSequence(idx) {
-            if (idx > totalBalls) {
-                setTimeout(finishLoading, 800);
-                return;
-            }
-            const ball = document.getElementById("b" + idx);
-            if (ball) ball.classList.add("revealed", "active-spinning");
-            setTimeout(function () {
-                runSequence(idx + 1);
-                setTimeout(function () {
-                    if (ball) {
-                        ball.classList.remove("active-spinning");
-                        ball.classList.add("stopping-style");
-                    }
-                }, 150);
-            }, ballActiveTime);
+        const balls = Array.from(document.querySelectorAll('#loading-screen .ball'));
+        let idx = 0;
+        function nextBall() {
+            if (idx > 0) balls[idx - 1].classList.remove('active-spinning');
+            if (idx === balls.length) { setTimeout(finishLoading, 800); return; }
+            balls[idx].classList.add('revealed', 'active-spinning');
+            idx++;
+            setTimeout(nextBall, 2200);
         }
-        runSequence(1);
+        const images = Array.from(document.querySelectorAll('#loading-screen .ball img'));
+        const ready = images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+            img.addEventListener('load', resolve, {once:true});
+            img.addEventListener('error', resolve, {once:true});
+        }));
+        Promise.race([Promise.all(ready), new Promise(resolve => setTimeout(resolve, 3000))]).then(nextBall);
     }
     function startApp() {
         syncSystemBars();
