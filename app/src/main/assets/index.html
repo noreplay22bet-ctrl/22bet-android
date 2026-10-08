@@ -22,13 +22,21 @@
         background-size:100% 100%; background-repeat:no-repeat; background-position:center;
         z-index:2147483647; display:flex; flex-direction:column; align-items:center; justify-content:center;
         font-family:sans-serif; }
-    #loading-screen .progress-container { display:flex; gap:12px; align-items:center; justify-content:center; position:absolute; top:54%; left:50%; transform:translateX(-50%); }
-    #loading-screen .ball { position:relative; width:20px; height:20px; flex-shrink:0; border-radius:50%; background:#355e62; }
-    #loading-screen .ball img { display:block; width:100%; height:100%; object-fit:contain; visibility:hidden; }
+    #loading-screen .progress-container { display:flex; gap:10px; align-items:center; justify-content:center; position:absolute; top:54%; left:50%; transform:translateX(-50%); }
+    #loading-screen .ball { position:relative; width:14px; height:14px; flex-shrink:0; border-radius:50%; background:#355e62; }
+    #loading-screen .ball img { position:absolute; display:block; width:100%; height:100%; object-fit:contain; visibility:hidden; }
     #loading-screen .ball.revealed { background:transparent; }
     #loading-screen .ball.revealed img { visibility:visible; }
-    #loading-screen .ball.active-spinning img { animation:splashRotateBall .7s linear infinite; }
+    #loading-screen .ball.active-spinning img { animation:splashRotateBall 1.8s linear infinite; }
     @keyframes splashRotateBall { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    #loading-screen #b1 img { width:159.949%; height:159.949%; left:-29.974%; top:-30.612%; }
+    #loading-screen #b2 img { width:149.286%; height:149.286%; left:-25.119%; top:-25.595%; }
+    #loading-screen #b3 img { width:149.108%; height:149.108%; left:-24.495%; top:-24.732%; }
+    #loading-screen #b4 img { width:138.564%; height:138.564%; left:-19.227%; top:-20.000%; }
+    #loading-screen #b5 img { width:134.549%; height:134.549%; left:-16.845%; top:-16.845%; }
+    #loading-screen #b6 img { width:146.495%; height:146.495%; left:-23.248%; top:-23.598%; }
+    #loading-screen #b7 img { width:157.736%; height:157.736%; left:-28.931%; top:-31.321%; }
+    #loading-screen #b8 img { width:136.304%; height:136.304%; left:-18.913%; top:-18.913%; }
     #loading-screen .version-info { position:absolute; bottom:22px; right:22px; color:#fff; font-size:12px; opacity:.85; }
     </style>
 
