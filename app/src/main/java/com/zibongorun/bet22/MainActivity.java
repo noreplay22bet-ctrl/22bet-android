@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
     private static final String ORIGIN = "https://appassets.androidplatform.net";
     @SuppressWarnings("deprecation")
     private void applySystemBars() {
-        int color = splashBars ? Color.rgb(12,62,68) : Color.rgb(237,243,247);
+        int color = splashBars ? Color.rgb(3,51,55) : Color.rgb(237,243,247);
         getWindow().setStatusBarColor(color);
         getWindow().setNavigationBarColor(
             !splashBars && Build.VERSION.SDK_INT < 26 ? Color.BLACK : color);
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
             root.requestApplyInsets();
         }
         applySystemBars();
-        web.setBackgroundColor(Color.rgb(12,62,68));
+        web.setBackgroundColor(Color.rgb(3,51,55));
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
