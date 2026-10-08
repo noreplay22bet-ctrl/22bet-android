@@ -89,7 +89,45 @@
             scrollbar-width: none;
         }
     </style>
-</head>
+<style>
+.category-symbol{width:25px;height:25px;display:block;flex-shrink:0;margin:0 auto 3px}
+.home-category-tabs{display:flex;align-items:stretch;justify-content:space-around;height:52px;background:#fff}
+.home-category-tab{position:relative;flex:1;min-width:0;border:0;background:transparent;color:#719da0;font:600 11px inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:3px 0 6px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.home-category-tab span{font-size:11px;font-weight:600}
+.home-category-tab.is-active{color:#14b84b}
+.home-category-tab::after{content:"";position:absolute;bottom:0;left:8%;right:8%;height:3px;border-radius:6px;background:transparent}
+.home-category-tab.is-active::after{background:#14b84b}
+</style>
+<script>
+function selectHomeCategory(button){
+ var bar=button.parentElement;
+ bar.querySelectorAll('.home-category-tab').forEach(function(tab){var active=tab===button;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',String(active));});
+}
+</script>
+<style>
+.other-category-symbol{display:block;width:25px;height:25px;margin:0 auto 3px;background:currentColor;-webkit-mask:url("other-icon.svg") center/contain no-repeat;mask:url("other-icon.svg") center/contain no-repeat}
+.guest-view{display:none;background:#edf3f7;min-height:calc(100vh - 80px);color:#123f4b}
+.guest-header{background:#fff;padding:20px 14px 10px;text-align:center;color:#67979b}
+.guest-header h2{margin:0 0 25px;font-size:24px;font-weight:700}
+.guest-auth{display:flex;gap:10px;padding-bottom:0}
+.guest-auth button{flex:1;background:#0bb34a;color:#fff;border:0;border-radius:12px;padding:12px 4px;font-size:16px;cursor:pointer}
+.guest-tabs{display:flex;background:#fff;padding:16px 8px 0}
+.guest-tabs button{flex:1;border:0;background:none;color:#719da0;padding:0 0 12px;font-size:12px;position:relative;cursor:pointer}
+.guest-tabs button i{display:block;font-size:24px;margin-bottom:9px}
+.guest-tabs button.active{color:#0bb34a}
+.guest-tabs button.active:after{content:"";position:absolute;bottom:0;left:3px;right:3px;height:3px;background:#0bb34a;border-radius:4px}
+.guest-empty{text-align:center;padding:36px 20px;color:#719da0;font-size:18px;line-height:1.5}
+.guest-empty strong{display:block;color:#123f4b;font-size:19px;margin:16px 0 8px}
+.guest-empty .empty-symbol{display:flex;align-items:center;justify-content:center;width:64px;height:64px;background:#93b9bd;color:#edf3f7;border-radius:50%;margin:0 auto;font-size:30px}
+.guest-card{background:white;margin:9px 12px;padding:16px;border-radius:20px;display:flex;gap:14px;align-items:center;color:#123f4b}
+.guest-card i{width:42px;height:42px;background:#edf3f7;color:#0bb34a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:25px;flex-shrink:0}
+.guest-card strong{font-size:17px}.guest-card small{display:block;color:#719da0;font-size:14px;margin-top:5px}
+.guest-history-empty{min-height:65vh;display:flex;flex-direction:column;justify-content:center}
+</style><script>
+function guestSelectTab(button){button.parentElement.querySelectorAll('button').forEach(function(item){item.classList.toggle('active',item===button);});}
+function refreshGuestViews(){var logged=localStorage.getItem('is_logged_in')==='true';['menu-page','favorites-page','betslip-page','history-page'].forEach(function(id){var page=document.getElementById(id);if(!page)return;page.querySelector(':scope > .authenticated-view').style.display=logged?'block':'none';page.querySelector(':scope > .guest-view').style.display=logged?'none':'block';});}
+document.addEventListener('DOMContentLoaded',refreshGuestViews);
+</script></head>
 
 <body class="app-loading" style="box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#edf3f7;color:#111;">
 
@@ -288,44 +326,36 @@
         </div>
 
 
-        <!-- Top Menu Inside Same Header (No Extra Border Gap) -->
-        <div style="
-display:flex;
-justify-content:space-around;
-align-items:center;
-height:52px;
-white-space:nowrap;
-overflow-x:auto;
-scrollbar-width:none;">
+<div class="home-category-tabs" role="tablist" aria-label="Categories"><button type="button" role="tab" aria-selected="true" class="home-category-tab is-active" onclick="selectHomeCategory(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon fill="currentColor" points="256.00,16.00 310.35,53.16 376.00,48.15 404.49,107.51 463.85,136.00 458.84,201.65 496.00,256.00 458.84,310.35 463.85,376.00 404.49,404.49 376.00,463.85 310.35,458.84 256.00,496.00 201.65,458.84 136.00,463.85 107.51,404.49 48.15,376.00 53.16,310.35 16.00,256.00 53.16,201.65 48.15,136.00 107.51,107.51 136.00,48.15 201.65,53.16"/><polygon fill="#ffffff" points="256.00,119.00 293.03,205.03 386.29,213.66 315.92,275.47 336.53,366.84 256.00,319.00 175.47,366.84 196.08,275.47 125.71,213.66 218.97,205.03"/></svg><span>Top</span></button><button type="button" role="tab" aria-selected="false" class="home-category-tab " onclick="selectHomeCategory(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g fill="currentColor">
+<path d="M113 154C79 207 65 274 58 352l49-3c-6 44-31 73-67 111 73-7 129-28 187-46l9 34c66-17 128-54 153-108-88 30-205-3-242-79-19-35-29-69-34-107Z"/>
+<circle cx="280" cy="205" r="169"/>
+</g>
+<g fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round">
+<circle cx="280" cy="205" r="169"/>
+<path d="m280 126-74 54 28 87h92l28-87-74-54ZM280 36v90M119 153l87 27M180 342l54-75m146 75-54-75m115-114-87 27"/>
 
-            <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;color:#14b84b;font-size:11px;font-weight:700;position:relative;">
-                <img src="top-icon.svg" alt="" aria-hidden="true" style="width:25px;height:25px;object-fit:contain;margin-bottom:3px;display:block;flex-shrink:0">
-                <span>Top</span>
-                <div style="position:absolute;bottom:-6px;width:100%;height:3px;background:#14b84b;border-radius:10px;"></div>
-            </div>
-
-            <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;color:#719da0;font-size:11px;font-weight:600;">
-                <img src="sports-icon.svg" alt="" aria-hidden="true" style="width:25px;height:25px;object-fit:contain;margin-bottom:3px;display:block;flex-shrink:0">
-                <span>Sports</span>
-            </div>
-
-            <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;color:#719da0;font-size:11px;font-weight:600;">
-                <img src="esports-icon.svg" alt="" aria-hidden="true" style="width:25px;height:25px;object-fit:contain;margin-bottom:3px;display:block;flex-shrink:0">
-                <span>Esports</span>
-            </div>
-
-            <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;color:#719da0;font-size:11px;font-weight:600;">
-                <img src="casino-icon.svg" alt="" aria-hidden="true" style="width:25px;height:25px;object-fit:contain;margin-bottom:3px;display:block;flex-shrink:0">
-                <span>Casino</span>
-            </div>
-
-            <div style="display:flex;flex-direction:column;align-items:center;min-width:70px;color:#719da0;font-size:11px;font-weight:600;">
-                <img src="22games-icon.svg" alt="" aria-hidden="true" style="width:25px;height:25px;object-fit:contain;margin-bottom:3px;display:block;flex-shrink:0">
-                <span>22Games</span>
-            </div>
-
-        </div>
-
+</g>
+</svg><span>Sports</span></button><button type="button" role="tab" aria-selected="false" class="home-category-tab " onclick="selectHomeCategory(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<path fill="currentColor" d="M32 387C25 337 36 235 61 174c16-41 39-66 72-69 29-3 48 11 70 24h106c22-13 41-27 70-24 33 3 56 28 72 69 25 61 36 163 29 213-2 16-11 23-27 22-37-2-63-21-89-53-16-19-29-29-50-29H198c-21 0-34 10-50 29-26 32-52 51-89 53-16 1-25-6-27-22Z"/>
+<circle cx="150" cy="232" r="51" fill="none" stroke="#ffffff" stroke-width="18"/>
+<g fill="#ffffff">
+<circle cx="365" cy="202" r="13"/>
+<circle cx="335" cy="232" r="13"/>
+<circle cx="395" cy="232" r="13"/>
+<circle cx="365" cy="262" r="13"/>
+</g>
+</svg><span>Esports</span></button><button type="button" role="tab" aria-selected="false" class="home-category-tab " onclick="selectHomeCategory(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect x="62" y="76" width="278" height="366" rx="30" fill="currentColor"/>
+<g transform="rotate(8 300 248)">
+<rect x="153" y="57" width="284" height="380" rx="30" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<path fill="#ffffff" d="M295 326c-16-13-88-67-88-113 0-47 59-62 88-21 29-41 88-26 88 21 0 46-72 100-88 113Z"/>
+</g></svg><span>Casino</span></button><button type="button" role="tab" aria-selected="false" class="home-category-tab " onclick="selectHomeCategory(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g transform="rotate(8 309 310)"><rect x="166" y="170" width="276" height="276" rx="35" fill="currentColor"/></g>
+<g transform="rotate(-8 220 216)">
+<rect x="69" y="65" width="296" height="296" rx="35" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<g fill="#ffffff"><circle cx="163" cy="159" r="24"/><circle cx="271" cy="159" r="24"/><circle cx="163" cy="267" r="24"/><circle cx="271" cy="267" r="24"/></g>
+</g></svg><span>22Games</span></button></div>
     </div>
 
 
@@ -508,108 +538,6 @@ scrollbar-width:none;
     <!-- Single Banner Card containing the full image with zoom/proper sizing -->
     <div style="background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
         <img src="https://task-rk.github.io/task/wman.png" alt="Grand Slam Events" style="width:100%;height:auto;display:block;transform:scale(1.02);transform-origin:center;">
-    </div>
-</div>
-
-
-
-
-
-    <!-- ==================== 3. LIVE TOURNAMENTS SECTION (Dynamic & ID Fitted) ==================== -->
-<div style="background:#edf3f7;padding:14px 0 16px;overflow:hidden;">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:0 15px 12px 15px;">
-        <div style="display:flex;align-items:center;gap:7px;">
-            <span style="font-size:22px;font-weight:800;color:#123f4b;">LIVE Tournaments</span>
-            <span style="color:#14b84b;border:2px solid #14b84b;background:#fff;font-size:12px;padding:2px 8px;border-radius:20px;font-weight:700;">Sport</span>
-        </div>
-        <button style="background:#fff;border:none;padding:5px 15px;border-radius:20px;font-size:13px;font-weight:700;color:#14b84b;">All</button>
-    </div>
-
-    <!-- Horizontal scroll container -->
-    <div class="no-scrollbar" style="display:flex;gap:12px;overflow-x:auto;padding:0 15px;scroll-snap-type:x mandatory;">
-        
-        <!-- Column Group 1 (Contains 3 vertical cards) -->
-        <div style="min-width:85vw;max-width:350px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;scroll-snap-align:start;">
-            
-            <!-- Tournament Card 1 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <div style="position:relative;font-size:28px;" id="t1-logo"></div>
-                    <span id="t1-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t1-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-            <!-- Tournament Card 2 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <div style="position:relative;font-size:28px;" id="t2-logo"></div>
-                    <span id="t2-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t2-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-            <!-- Tournament Card 3 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <div style="position:relative;font-size:28px;" id="t3-logo"></div>
-                    <span id="t3-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t3-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Column Group 2 (Next set of 3 vertical cards) -->
-        <div style="min-width:85vw;max-width:350px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;scroll-snap-align:start;">
-            
-            <!-- Tournament Card 4 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span id="t4-logo" style="font-size:28px;"></span>
-                    <span id="t4-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t4-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-            <!-- Tournament Card 5 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span id="t5-logo" style="font-size:28px;"></span>
-                    <span id="t5-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t5-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-            <!-- Tournament Card 6 -->
-            <div style="background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span id="t6-logo" style="font-size:28px;"></span>
-                    <span id="t6-name" style="color:#123f4b;font-size:14px;font-weight:700;"></span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span id="t6-badge" style="background:#edf3f7;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;color:#123f4b;"></span>
-                    <i class="fa-regular fa-star" style="color:#14b84b;font-size:18px;"></i>
-                </div>
-            </div>
-
-        </div>
-
     </div>
 </div>
 
@@ -4359,7 +4287,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 <!-- MAINMENU CONTAINER -->
-<div id="menu-page" style="display:none; padding-bottom:70px; background:#edf3f7; min-height:100vh; position:relative; overflow:hidden;">
+<div id="menu-page" style="display:none; padding-bottom:70px; background:#edf3f7; min-height:100vh; position:relative; overflow:hidden;"><div class="authenticated-view">
 
     <!-- ১. প্রোফাইল হেডার সেকশন -->
     <div style="background:#fff; padding:12px 15px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
@@ -4413,20 +4341,40 @@ window.addEventListener("DOMContentLoaded", function () {
     <!-- ৩. ক্যাটাগরি ট্যাব (Top, Sports, Casino, 22Games, Other) -->
     <div id="tabs-container" style="background:#fff; padding:8px 10px; margin-top:0px; display:flex; justify-content:space-between; text-align:center; position:relative; border-bottom: 2px solid #e2e8f0;">
         <div onclick="switchCategory('top', this)" style="cursor:pointer; flex:1; color:#27ae60;" class="tab-item">
-            <i class="fa-solid fa-star" style="font-size:16px;"></i>
+            <svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon fill="currentColor" points="256.00,16.00 310.35,53.16 376.00,48.15 404.49,107.51 463.85,136.00 458.84,201.65 496.00,256.00 458.84,310.35 463.85,376.00 404.49,404.49 376.00,463.85 310.35,458.84 256.00,496.00 201.65,458.84 136.00,463.85 107.51,404.49 48.15,376.00 53.16,310.35 16.00,256.00 53.16,201.65 48.15,136.00 107.51,107.51 136.00,48.15 201.65,53.16"/><polygon fill="#ffffff" points="256.00,119.00 293.03,205.03 386.29,213.66 315.92,275.47 336.53,366.84 256.00,319.00 175.47,366.84 196.08,275.47 125.71,213.66 218.97,205.03"/></svg>
             <div style="font-size:11px; font-weight:600; margin-top:3px;">Top</div>
         </div>
-        <div onclick="switchCategory('sports', this)" style="cursor:pointer; flex:1; color:#666;" class="tab-item">
-            <i class="fa-solid fa-futbol" style="font-size:16px;"></i>
+        <div onclick="switchCategory('sports', this)" style="cursor:pointer; flex:1; color:#719da0;" class="tab-item">
+            <svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g fill="currentColor">
+<path d="M113 154C79 207 65 274 58 352l49-3c-6 44-31 73-67 111 73-7 129-28 187-46l9 34c66-17 128-54 153-108-88 30-205-3-242-79-19-35-29-69-34-107Z"/>
+<circle cx="280" cy="205" r="169"/>
+</g>
+<g fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round">
+<circle cx="280" cy="205" r="169"/>
+<path d="m280 126-74 54 28 87h92l28-87-74-54ZM280 36v90M119 153l87 27M180 342l54-75m146 75-54-75m115-114-87 27"/>
+
+</g>
+</svg>
             <div style="font-size:11px; font-weight:600; margin-top:3px;">Sports</div>
         </div>
-        <div onclick="switchCategory('casino', this)" style="cursor:pointer; flex:1; color:#666;" class="tab-item">
-            <i class="fa-solid fa-dice" style="font-size:16px;"></i>
+        <div onclick="switchCategory('casino', this)" style="cursor:pointer; flex:1; color:#719da0;" class="tab-item">
+            <svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect x="62" y="76" width="278" height="366" rx="30" fill="currentColor"/>
+<g transform="rotate(8 300 248)">
+<rect x="153" y="57" width="284" height="380" rx="30" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<path fill="#ffffff" d="M295 326c-16-13-88-67-88-113 0-47 59-62 88-21 29-41 88-26 88 21 0 46-72 100-88 113Z"/>
+</g></svg>
             <div style="font-size:11px; font-weight:600; margin-top:3px;">Casino</div>
         </div>
         <!-- এখানে switchCategory('22games', this) করা হলো যাতে ID-র সাথে মিলে যায় -->
-        <div onclick="switchCategory('22games', this)" style="cursor:pointer; flex:1; color:#666;" class="tab-item">
-            <i class="fa-solid fa-gamepad" style="font-size:16px;"></i>
+        <div onclick="switchCategory('22games', this)" style="cursor:pointer; flex:1; color:#719da0;" class="tab-item">
+            <svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g transform="rotate(8 309 310)"><rect x="166" y="170" width="276" height="276" rx="35" fill="currentColor"/></g>
+<g transform="rotate(-8 220 216)">
+<rect x="69" y="65" width="296" height="296" rx="35" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<g fill="#ffffff"><circle cx="163" cy="159" r="24"/><circle cx="271" cy="159" r="24"/><circle cx="163" cy="267" r="24"/><circle cx="271" cy="267" r="24"/></g>
+</g></svg>
             <div style="font-size:11px; font-weight:600; margin-top:3px;">22Games</div>
         </div>
 
@@ -4435,14 +4383,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 
-        <div onclick="switchCategory('other', this)" style="cursor:pointer; flex:1; color:#666; display:flex; flex-direction:column; align-items:center; justify-content:center;" class="tab-item">
-    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:20px;">
-        <div style="display:flex; gap:4px; align-items:center;">
-            <span style="width:6px; height:6px; background:currentColor; border-radius:50%;"></span>
-            <span style="width:6px; height:6px; background:currentColor; border-radius:50%;"></span>
-        </div>
-        <div style="width:6px; height:6px; background:currentColor; border-radius:50%; margin-top:3px;"></div>
-    </div>
+        <div onclick="switchCategory('other', this)" style="cursor:pointer; flex:1; color:#719da0; display:flex; flex-direction:column; align-items:center; justify-content:center;" class="tab-item"><span class="other-category-symbol"></span>
     <div style="font-size:11px; font-weight:600; margin-top:3px;">Other</div>
 </div>
 
@@ -4456,20 +4397,8 @@ window.addEventListener("DOMContentLoaded", function () {
     
     <!-- TOP PAGE -->
     <div id="cat-top" class="category-page" style="padding:10px; display:flex; flex-direction:column; gap:8px;">
-        <div style="background:linear-gradient(135deg, #1b3d6d, #2563eb); padding:12px 15px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; color:#fff;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:38px; height:38px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#1b3d6d; font-size:18px;"><i class="fa-solid fa-baseball-bat-ball"></i></div>
-                <div style="font-size:15px; font-weight:700;">Grand Slam. Men</div>
-            </div>
-            <div style="font-size:24px;"><i class="fa-solid fa-person-running"></i></div>
-        </div>
-
-        <div style="background:linear-gradient(135deg, #1b3d6d, #2563eb); padding:12px 15px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; color:#fff;">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:38px; height:38px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#1b3d6d; font-size:18px;"><i class="fa-solid fa-baseball-bat-ball"></i></div>
-                <div style="font-size:15px; font-weight:700;">Grand Slam. Women</div>
-            </div>
-            <div style="font-size:24px;"><i class="fa-solid fa-person-walking"></i></div>
+        <div style="background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+            <img src="https://task-rk.github.io/task/wman.png" alt="Grand Slam Men and Women" style="width:100%;height:auto;display:block;transform:scale(1.02);transform-origin:center;">
         </div>
 
         <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
@@ -4660,7 +4589,27 @@ window.addEventListener("DOMContentLoaded", function () {
         </div>
     </div>
 
-</div>
+</div><div class="guest-view"><header class="guest-header"><h2>Menu</h2><div class="guest-auth"><button onclick="showLogin()">Log in</button><button onclick="showRegister()">Registration</button></div></header><div class="guest-tabs"><button class="active" onclick="guestSelectTab(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon fill="currentColor" points="256.00,16.00 310.35,53.16 376.00,48.15 404.49,107.51 463.85,136.00 458.84,201.65 496.00,256.00 458.84,310.35 463.85,376.00 404.49,404.49 376.00,463.85 310.35,458.84 256.00,496.00 201.65,458.84 136.00,463.85 107.51,404.49 48.15,376.00 53.16,310.35 16.00,256.00 53.16,201.65 48.15,136.00 107.51,107.51 136.00,48.15 201.65,53.16"/><polygon fill="#ffffff" points="256.00,119.00 293.03,205.03 386.29,213.66 315.92,275.47 336.53,366.84 256.00,319.00 175.47,366.84 196.08,275.47 125.71,213.66 218.97,205.03"/></svg>Top</button><button class="" onclick="guestSelectTab(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g fill="currentColor">
+<path d="M113 154C79 207 65 274 58 352l49-3c-6 44-31 73-67 111 73-7 129-28 187-46l9 34c66-17 128-54 153-108-88 30-205-3-242-79-19-35-29-69-34-107Z"/>
+<circle cx="280" cy="205" r="169"/>
+</g>
+<g fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round">
+<circle cx="280" cy="205" r="169"/>
+<path d="m280 126-74 54 28 87h92l28-87-74-54ZM280 36v90M119 153l87 27M180 342l54-75m146 75-54-75m115-114-87 27"/>
+
+</g>
+</svg>Sports</button><button class="" onclick="guestSelectTab(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect x="62" y="76" width="278" height="366" rx="30" fill="currentColor"/>
+<g transform="rotate(8 300 248)">
+<rect x="153" y="57" width="284" height="380" rx="30" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<path fill="#ffffff" d="M295 326c-16-13-88-67-88-113 0-47 59-62 88-21 29-41 88-26 88 21 0 46-72 100-88 113Z"/>
+</g></svg>Casino</button><button class="" onclick="guestSelectTab(this)"><svg class="category-symbol" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g transform="rotate(8 309 310)"><rect x="166" y="170" width="276" height="276" rx="35" fill="currentColor"/></g>
+<g transform="rotate(-8 220 216)">
+<rect x="69" y="65" width="296" height="296" rx="35" fill="currentColor" stroke="#ffffff" stroke-width="18"/>
+<g fill="#ffffff"><circle cx="163" cy="159" r="24"/><circle cx="271" cy="159" r="24"/><circle cx="163" cy="267" r="24"/><circle cx="271" cy="267" r="24"/></g>
+</g></svg>22Games</button><button class="" onclick="guestSelectTab(this)"><span class="other-category-symbol"></span>Other</button></div><div class="guest-card"><i class="fa-solid fa-stopwatch"></i><div><strong>LIVE</strong><small>Bet on live events</small></div></div><div class="guest-card"><i class="fa-solid fa-calendar-days"></i><div><strong>Pre-match</strong><small>Bet on upcoming events</small></div></div><div class="guest-card"><i class="fa-solid fa-gamepad"></i><div><strong>Esports</strong><small>The best esports events</small></div></div><div class="guest-card"><i class="fa-solid fa-leaf"></i><div><strong>Slots</strong><small>The best slot games</small></div></div><div class="guest-card"><i aria-hidden="true">♠</i><div><strong>Live casino</strong><small>Feel like you’re in a casino</small></div></div><div class="guest-card"><i class="fa-solid fa-dice"></i><div><strong>22Games</strong><small>Play and win</small></div></div><div class="guest-card"><i class="fa-solid fa-cart-shopping"></i><div><strong>Promo codes</strong><small></small></div></div></div></div>
 
 <style>
 @keyframes slideInFromRight {
@@ -4702,7 +4651,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 <!-- FAVORITES PAGE (স্ক্রিনশটের সাথে হুবহু মিল রেখে তৈরি) -->
-<div id="favorites-page" style="display:none; padding-bottom:70px; background:#f0f4f8; min-height:100vh; position:relative;">
+<div id="favorites-page" style="display:none; padding-bottom:70px; background:#f0f4f8; min-height:100vh; position:relative;"><div class="authenticated-view">
 
     <!-- ১. মূল হেডার (বামে সবুজ প্লাস ও ব্যালেন্স, মাঝখানে টাইটেল, ডানে ডাস্টবিন আইকন) -->
     <div style="background:#fff; padding:10px 15px; display:flex; align-items:center; justify-content:space-between; position:relative; box-shadow:0 1px 2px rgba(0,0,0,0.04);">
@@ -4771,7 +4720,7 @@ window.addEventListener("DOMContentLoaded", function () {
         We recommend
     </div>
 
-</div>
+</div><div class="guest-view"><header class="guest-header"><h2>Favorites</h2></header><div class="guest-tabs"><button class="active" onclick="guestSelectTab(this)"><i class="fa-solid fa-layer-group"></i>Events</button><button class="" onclick="guestSelectTab(this)"><i class="fa-solid fa-star"></i>Other</button><button class="" onclick="guestSelectTab(this)"><i class="fa-solid fa-eye"></i>Tracked</button><button class="" onclick="guestSelectTab(this)"><i class="fa-solid fa-book-open"></i>Viewed</button></div><div class="guest-empty"><span class="empty-symbol"><i class="fa-solid fa-layer-group"></i></span><strong>Your list of favorite games is empty</strong>Add events you are interested in for fast access</div></div></div>
 
 
 
@@ -4786,7 +4735,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 <!-- BET SLIP PAGE (শুরুতে এটি display:none থাকবে) -->
-<div id="betslip-page" style="display:none; padding-bottom:70px; background:#edf3f7; min-height:100vh;">
+<div id="betslip-page" style="display:none; padding-bottom:70px; background:#edf3f7; min-height:100vh;"><div class="authenticated-view">
 
     <!-- ১. হেডার টাইটেল -->
     <div style="background:#fff; padding:15px; text-align:center; font-size:18px; font-weight:700; color:#557a84; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
@@ -4862,7 +4811,7 @@ window.addEventListener("DOMContentLoaded", function () {
         </div>
 
     </div>
-</div>
+</div><div class="guest-view"><header class="guest-header"><h2>Bet slip</h2><div class="guest-auth"><button onclick="showLogin()">Log in</button><button onclick="showRegister()">Registration</button></div></header><div class="guest-empty"><strong>Your bet slip is empty</strong>Add an event to the bet slip or select one of the options</div><div class="guest-card"><i class="fa-solid fa-magnifying-glass"></i><div><strong>Event search</strong><small>For you only</small></div></div><div class="guest-card"><i class="fa-solid fa-server"></i><div><strong>Accumulator of the Day</strong><small>Best offers of the day</small></div></div><div class="guest-card"><i class="fa-solid fa-sliders"></i><div><strong>Create bet slip</strong><small>Generate your bet slip</small></div></div><div class="guest-card"><i class="fa-solid fa-arrow-up-from-bracket"></i><div><strong>Load bet slip</strong><small>Load your bet slip</small></div></div></div></div>
 
 
 
@@ -4879,7 +4828,7 @@ window.addEventListener("DOMContentLoaded", function () {
         padding-bottom:70px;
         background:#edf3f7;
         min-height:100vh;
-     ">
+     "><div class="authenticated-view">
 
     <!-- ===== SINGLE WHITE CARD ===== -->
     <div style="
@@ -5222,7 +5171,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
     </div>
 
-</div>
+</div><div class="guest-view"><header class="guest-header"><h2>Bet history</h2><div class="guest-auth"><button onclick="showLogin()">Log in</button><button onclick="showRegister()">Registration</button></div></header><div class="guest-empty guest-history-empty"><span class="empty-symbol"><i class="fa-solid fa-clock"></i></span><p>Bet history is only available for registered customers</p></div></div></div>
 
 
 
@@ -14928,6 +14877,7 @@ const ALL_PAGES = [
 ];
 
 function switchPage(pageId) {
+    refreshGuestViews();
     ALL_PAGES.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -15462,14 +15412,15 @@ function switchCategory(category, element) {
     const indicator = document.getElementById('green-indicator');
     if(indicator && element) {
         indicator.style.left = element.offsetLeft + 'px';
+        indicator.style.width = element.offsetWidth + 'px';
     }
 
     document.querySelectorAll('.tab-item').forEach(div => {
-        div.style.color = '#666';
+        div.style.color = '#719da0';
         const icon = div.querySelector('i');
         const text = div.querySelector('div');
-        if(icon) icon.style.color = '#666';
-        if(text) text.style.color = '#666';
+        if(icon) icon.style.color = '#719da0';
+        if(text) text.style.color = '#719da0';
     });
 
     if(element) {
@@ -15884,7 +15835,7 @@ function renderEmailCalendar() {
     function syncSystemBars() {
         const loading = document.body && document.body.classList.contains("app-loading") &&
             !document.documentElement.classList.contains("app-returning");
-        const color = loading ? "#0c3e44" : "#FFFFFF";
+        const color = loading ? "#0c3e44" : "#edf3f7";
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.content = color;
         if (window.NativeApp && typeof window.NativeApp.postMessage === "function") {
