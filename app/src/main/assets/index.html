@@ -15864,7 +15864,14 @@ function renderEmailCalendar() {
         const balls = Array.from(document.querySelectorAll('#loading-screen .ball'));
         let idx = 0;
         function nextBall() {
-            if (idx > 0) balls[idx - 1].classList.remove('active-spinning');
+            if (idx > 0) {
+                const previous = balls[idx - 1];
+                const image = previous.querySelector('img');
+                // Freeze the rendered rotation before removing its animation.
+                const rotation = getComputedStyle(image).transform;
+                image.style.transform = rotation;
+                previous.classList.remove('active-spinning');
+            }
             if (idx === balls.length) { setTimeout(finishLoading, 800); return; }
             balls[idx].classList.add('revealed', 'active-spinning');
             idx++;
