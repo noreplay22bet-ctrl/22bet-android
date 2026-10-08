@@ -2291,6 +2291,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
 
+            <div class="reg-input-section" onclick="openPhoneCountryPicker()" style="cursor:pointer;">
+                <div class="phone-input-label">Country *</div>
+                <div class="reg-select-line"><input id="phone-country" placeholder="Select Country" readonly style="background:transparent;border:none;outline:none;width:100%;font-size:17px;color:#244e5a;"><i class="fas fa-chevron-down"></i></div>
+            </div>
         </div>
 
 
@@ -4056,7 +4060,13 @@ function renderCountryList(countries = countriesData) {
     if (hasOther) container.innerHTML += otherHTML;
 }
 
+let phoneCountryOnly = false;
+function openPhoneCountryPicker() {
+    openCountryPopup();
+    phoneCountryOnly = true;
+}
 function openCountryPopup() {
+    phoneCountryOnly = false;
     let el = document.getElementById('country-popup-overlay');
     if(el) el.style.display = 'flex';
     renderCountryList();
@@ -4068,6 +4078,12 @@ function closeCountryPopup() {
 }
 
 function selectCountryCode(code, countryName, flag, element) {
+    if (phoneCountryOnly) {
+        document.getElementById('phone-country').value = countryName;
+        closeCountryPopup();
+        phoneCountryOnly = false;
+        return;
+    }
     let codeInput = document.getElementById('selected-code-input');
     let flagSpan = document.getElementById('selected-flag');
     if (isEmailRegistrationActive()) {
@@ -4077,6 +4093,8 @@ function selectCountryCode(code, countryName, flag, element) {
     } else {
         if(codeInput) codeInput.value = code;
         if(flagSpan) flagSpan.innerText = flag;
+        const country = document.getElementById('phone-country');
+        if (country) country.value = countryName;
     }
     countrySelectionTouched = true;
     autoUpdateCurrencyByCode(code, countryName);
@@ -4260,6 +4278,7 @@ async function detectUserLocationAndSetDefault() {
         const flag = document.getElementById("selected-flag");
         if (field) field.value = country.code;
         if (flag) flag.innerText = country.flag;
+        document.getElementById("phone-country").value = country.name;
         autoUpdateCurrencyByCode(country.code, country.name);
     } catch (error) { /* Keep the initial default when location lookup is unavailable. */ }
 }
@@ -4271,6 +4290,8 @@ window.addEventListener("DOMContentLoaded", function () {
         if (flag) flag.innerText = "🇺🇸";
     }
     autoUpdateCurrencyByCode(field ? field.value : "+1", "United States");
+    const countryField = document.getElementById("phone-country");
+    if (countryField && !countryField.value) countryField.value = "United States";
     // Keep the selected default until the user chooses a different country.
 });
 
@@ -13749,33 +13770,21 @@ window.hidePhoneReg = function() {
 function submitPhoneRegistration() {
     window.pendingEmailProfile = null;
 
-    const checkbox = document.getElementById("c1");
-    const errorIcon = document.getElementById("error-icon");
-    const checkboxError = document.getElementById("checkbox-error");
-
-    if (checkbox && !checkbox.checked) {
-
-        if (errorIcon) {
-            errorIcon.style.display = "inline-block";
-        }
-
-        if (checkboxError) {
-            checkboxError.style.display = "block";
-        }
-
+    const phone = document.getElementById('phone-number');
+    const missingPhone = !phone.value.trim();
+    phone.closest('.phone-number-box').classList.toggle('phone-field-invalid', missingPhone);
+    let invalid = missingPhone;
+    ['c1', 'c2', 'c4'].forEach(id => {
+        const input = document.getElementById(id);
+        input.closest('.reg-check-row').classList.toggle('phone-check-invalid', !input.checked);
+        invalid = invalid || !input.checked;
+    });
+    if (!document.getElementById('selected-code-input').value || !document.getElementById('currency-select').value || !document.getElementById('phone-country').value) invalid = true;
+    if (invalid) {
+        showPhoneValidationToast();
         return;
-
-    } else {
-
-        if (errorIcon) {
-            errorIcon.style.display = "none";
-        }
-
-        if (checkboxError) {
-            checkboxError.style.display = "none";
-        }
     }
-
+    window.tempCountry = document.getElementById('phone-country').value;
 
     const countryCode = document.getElementById("selected-code-input")?.value || "+1";
     const phoneInput = document.querySelector('#phone-registration-form input[type="tel"], #phone-registration-form input[placeholder*="phone"]')?.value || "";
@@ -13900,7 +13909,7 @@ function nextRegistration() {
 
         surname: "",
 
-        country: "",
+        country: window.tempCountry || "",
 
         city: "",
 
@@ -15093,6 +15102,10 @@ async function shareInfo() {
         title: "22BET Account Info",
         text: `22BET Account Info:\nUsername: ${userEl.innerText}\nPassword: ${passEl.innerText}`
     };
+    if (window.NativeApp && typeof window.NativeApp.postMessage === "function") {
+        window.NativeApp.postMessage(JSON.stringify({action: "share", text: data.text}));
+        return;
+    }
     // Call directly from the button tap to retain the browser's user activation.
     if (typeof navigator.share === "function") {
         try {
@@ -15218,38 +15231,8 @@ function confirmLogout(saveDetails) {
     }
 
 
-    /* =========================================
-       HIDE HOME PAGE
-       ========================================= */
-
-    let homePage =
-        document.getElementById(
-            "home-page"
-        );
-
-    if (homePage) {
-        homePage.style.display = "none";
-    }
-
-
-    /* =========================================
-       SHOW LOGIN PAGE
-       ========================================= */
-
-    let loginPage =
-        document.getElementById(
-            "login-page"
-        );
-
-    if (loginPage) {
-
-        loginPage.style.display = "block";
-
-    } else {
-
-        window.location.reload();
-    }
-    if (window.resetAppNavigation) window.resetAppNavigation('home-page');
+    if (window.refreshGuestViews) window.refreshGuestViews();
+    window.restartSplash();
 }
 
 
@@ -15833,6 +15816,19 @@ function renderEmailCalendar() {
 <script>
 /* One-file startup: first-visit splash; returning users open Home directly. */
 (function () {
+    const splashTemplate = document.getElementById('loading-screen').cloneNode(true);
+    window.restartSplash = function () {
+        if (document.body.classList.contains('app-loading')) return;
+        document.documentElement.classList.remove('app-returning');
+        document.body.classList.add('app-loading');
+        const shell = document.getElementById('app-shell');
+        shell.setAttribute('inert', '');
+        shell.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(splashTemplate.cloneNode(true));
+        window.resetAppNavigation('home-page');
+        syncSystemBars();
+        startLoadingSequence();
+    };
     function syncSystemBars() {
         const loading = document.body && document.body.classList.contains("app-loading") &&
             !document.documentElement.classList.contains("app-returning");
@@ -15896,5 +15892,27 @@ function renderEmailCalendar() {
 })();
 </script>
 
+
+<style>
+.phone-field-invalid .phone-number-line {border-bottom:1px solid #dd4b50!important;position:relative;}
+.phone-field-invalid input,.phone-field-invalid input::placeholder {color:#dd4b50!important;}
+.phone-field-invalid .phone-number-line::after,.phone-check-invalid::after {content:'!';background:#dd4b50;color:white;border-radius:50%;width:19px;height:19px;line-height:19px;text-align:center;font-weight:bold;flex-shrink:0;}
+.phone-field-invalid .phone-number-line::after {position:absolute;right:3px;top:5px;}
+.phone-field-invalid::after {content:'Required field';display:block;color:#dd4b50;font-size:12px;margin-top:6px;}
+.phone-check-invalid input {appearance:none!important;border:2px solid #dd4b50!important;background:transparent!important;}
+.phone-check-invalid label {flex:1;}
+#phone-validation-toast {position:fixed;bottom:78px;left:12px;right:12px;padding:18px;background:#0bb33f;color:white;border-radius:18px;z-index:999999;font-size:16px;}
+</style>
+<script>
+let phoneToastTimer;
+function showPhoneValidationToast() {
+    let toast = document.getElementById('phone-validation-toast');
+    if (!toast) {toast = document.createElement('div');toast.id='phone-validation-toast';toast.setAttribute('role','alert');document.body.appendChild(toast);}
+    toast.textContent = '❕ Check entered data';toast.hidden=false;
+    clearTimeout(phoneToastTimer);phoneToastTimer=setTimeout(()=>toast.hidden=true,3000);
+}
+document.getElementById('phone-number').addEventListener('input',function(){if(this.value.trim())this.closest('.phone-number-box').classList.remove('phone-field-invalid');});
+['c1','c2','c4'].forEach(id=>document.getElementById(id).addEventListener('change',function(){if(this.checked)this.closest('.reg-check-row').classList.remove('phone-check-invalid');}));
+</script>
 </body>
 </html>
