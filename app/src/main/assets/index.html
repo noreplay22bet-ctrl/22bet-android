@@ -1755,30 +1755,6 @@ scrollbar-width:none;
         </div>
 
 
-        <!-- ===== SOCIAL ICONS ===== -->
-        <div class="login-social-icons">
-
-            <img
-                src="https://task-rk.github.io/task/googol.jpeg"
-                class="login-social-icon login-google-icon"
-                alt="Google"
-            >
-
-            <img
-                src="https://task-rk.github.io/task/xicon.png"
-                class="login-social-icon login-x-icon"
-                alt="X"
-            >
-
-            <img
-                src="https://task-rk.github.io/task/telegram.png"
-                class="login-social-icon login-telegram-icon"
-                alt="Telegram"
-            >
-
-        </div>
-
-
         <!-- ===== REGISTER ===== -->
         <div class="login-footer-register">
 
@@ -13801,7 +13777,7 @@ function submitPhoneRegistration() {
 
 
     const randomUser =
-        "17" +
+        "18" +
         Math.floor(
             1000000 + Math.random() * 9000000
         );
@@ -14047,87 +14023,34 @@ async function processLogin() {
 
 
     let profile = null;
-
-
+    let localProfile = null;
+    try { localProfile = JSON.parse(localStorage.getItem('user_profile') || 'null'); } catch (_) {}
+    const matches = account => account && String(account.acc) === userId && String(account.pass) === userPass;
     try {
-
-        /*
-         * FIRST:
-         * Firebase account check
-         */
-        if (
-            window.firebaseDb &&
-            typeof window.dbGet === "function" &&
-            typeof window.dbRef === "function"
-        ) {
-
-            const snapshot =
-                await window.dbGet(
-                    window.dbRef(
-                        window.firebaseDb,
-                        "users/" + userId
-                    )
-                );
-
-
-            // ID does not exist
-            if (!snapshot.exists()) {
-
-                showLoginErrorPopup();
-
-                return;
+        if (window.firebaseDb && typeof window.dbGet === 'function' && typeof window.dbRef === 'function') {
+            let snapshot;
+            try {
+                snapshot = await Promise.race([
+                    window.dbGet(window.dbRef(window.firebaseDb, 'users/' + userId)),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Login lookup timed out')), 10000))
+                ]);
+            } catch (error) {
+                if (!matches(localProfile)) throw error;
+                profile = localProfile;
             }
-
-
-            profile = snapshot.val();
-
-
-            // Password does not match
-            if (
-                !profile ||
-                profile.acc !== userId ||
-                profile.pass !== userPass
-            ) {
-
-                showLoginErrorPopup();
-
-                return;
+            if (snapshot) {
+                if (snapshot.exists()) {
+                    profile = snapshot.val();
+                    if (!matches(profile)) { showLoginErrorPopup(); return; }
+                } else if (matches(localProfile)) {
+                    profile = localProfile;
+                } else { showLoginErrorPopup(); return; }
             }
-
-
-            // Keep existing account data
-            localStorage.setItem(
-                'user_profile',
-                JSON.stringify(profile)
-            );
-
         } else {
-
-            /*
-             * Firebase unavailable:
-             * use existing local account
-             */
-
-            profile =
-                JSON.parse(
-                    localStorage.getItem(
-                        'user_profile'
-                    )
-                );
-
-
-            if (
-                !profile ||
-                profile.acc !== userId ||
-                profile.pass !== userPass
-            ) {
-
-                showLoginErrorPopup();
-
-                return;
-            }
+            profile = localProfile;
+            if (!matches(profile)) { showLoginErrorPopup(); return; }
         }
-
+        localStorage.setItem('user_profile', JSON.stringify(profile));
 
         /* =====================================
            LOGIN SUCCESS
@@ -15287,7 +15210,7 @@ async function submitEmailRegistration() {
     try {
         let id;
         for (let attempt = 0; attempt < 5; attempt++) {
-            id = "17" + Math.floor(1000000 + Math.random() * 9000000);
+            id = "18" + Math.floor(1000000 + Math.random() * 9000000);
             if (!window.firebaseDb || typeof window.dbGet !== "function") break;
             const existing = await window.dbGet(window.dbRef(window.firebaseDb, "users/" + id));
             if (!existing.exists()) break;
@@ -15914,5 +15837,18 @@ function showPhoneValidationToast() {
 document.getElementById('phone-number').addEventListener('input',function(){if(this.value.trim())this.closest('.phone-number-box').classList.remove('phone-field-invalid');});
 ['c1','c2','c4'].forEach(id=>document.getElementById(id).addEventListener('change',function(){if(this.checked)this.closest('.reg-check-row').classList.remove('phone-check-invalid');}));
 </script>
+
+<style>
+#login-page {background:#edf3f7;}
+#login-page .login-top-bar {height:48%;}
+#login-page .login-card-container {height:52%;background:#edf3f7;padding:28px 16px 16px;}
+#login-page .login-title {margin-bottom:26px;}
+#login-page .login-input-group {margin-bottom:22px;}
+#login-page .login-footer-register {margin-top:auto;padding-top:24px;flex-shrink:0;}
+@media (max-height:600px) {
+ #login-page .login-top-bar {height:35%;}
+ #login-page .login-card-container {height:65%;}
+}
+</style>
 </body>
 </html>
