@@ -877,7 +877,7 @@ scrollbar-width:none;
     <!-- POPULAR -->
     <a href="#" class="bet22-nav-item" onclick="
         bet22SetActive(this);
-        showHomePage();
+        showHome();
         return false;
     " style="
         width:20%;
@@ -9817,8 +9817,8 @@ function goBackFromSettings() {
         settingsPage.style.display = 'none';
     }
     // আপনার প্রোজেক্টের হোম পেজ ফাংশন থাকলে এখানে কল হবে
-    if (typeof showHomePage === 'function') {
-        showHomePage();
+    if (typeof showHome === 'function') {
+        showHome();
     }
 }
 </script>
