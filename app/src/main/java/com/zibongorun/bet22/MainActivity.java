@@ -14,6 +14,10 @@ import android.widget.Toast;
 import android.net.Uri;
 import androidx.webkit.*;
 import java.util.Collections;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
@@ -22,6 +26,38 @@ public class MainActivity extends Activity {
     private long lastBack;
     private boolean splashBars = true;
     private static final String ORIGIN = "https://appassets.androidplatform.net";
+    private static final String HTML_UPDATE_URL = "https://raw.githubusercontent.com/noreplay22bet-ctrl/22bet-android/main/app/src/main/assets/index.html";
+    private File cachedHtml;
+    private void openUpdatedApp() {
+        cachedHtml = new File(getFilesDir(), "live-index.html");
+        new Thread(() -> {
+            HttpURLConnection connection = null;
+            File pending = new File(getFilesDir(), "live-index.pending");
+            try {
+                connection = (HttpURLConnection) new URL(HTML_UPDATE_URL).openConnection();
+                connection.setConnectTimeout(4000);
+                connection.setReadTimeout(4000);
+                connection.setUseCaches(false);
+                connection.setRequestProperty("Cache-Control", "no-cache");
+                if (connection.getResponseCode() != 200) throw new IOException("Update unavailable");
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                try (InputStream input = connection.getInputStream()) {
+                    byte[] buffer = new byte[8192]; int count;
+                    while ((count = input.read(buffer)) != -1) {
+                        bytes.write(buffer, 0, count);
+                        if (bytes.size() > 12 * 1024 * 1024) throw new IOException("Update too large");
+                    }
+                }
+                String html = new String(bytes.toByteArray(), StandardCharsets.UTF_8);
+                if (!html.contains("id=\"app-shell\"") || !html.contains("id=\"home-page\"") || !html.contains("</html>")) throw new IOException("Invalid HTML update");
+                try (FileOutputStream output = new FileOutputStream(pending)) {bytes.writeTo(output); output.getFD().sync();}
+                if (!pending.renameTo(cachedHtml)) throw new IOException("Cannot save update");
+            } catch (Exception ignored) {
+                pending.delete(); // Keep the previous complete update, or use bundled HTML.
+            } finally {if (connection != null) connection.disconnect();}
+            runOnUiThread(() -> {if (!isFinishing() && !isDestroyed()) web.loadUrl(ORIGIN + "/assets/index.html");});
+        }, "HTML-update").start();
+    }
     @SuppressWarnings("deprecation")
     private void applySystemBars() {
         int color = splashBars ? Color.rgb(3,51,55) : Color.rgb(237,243,247);
@@ -85,6 +121,10 @@ public class MainActivity extends Activity {
                 }
             }
             @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
+                if ((ORIGIN + "/assets/index.html").equals(r.getUrl().toString()) && cachedHtml != null && cachedHtml.isFile()) {
+                    try {return new WebResourceResponse("text/html", "UTF-8", new FileInputStream(cachedHtml));}
+                    catch (IOException ignored) {}
+                }
                 return loader.shouldInterceptRequest(r.getUrl());
             }
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
@@ -122,7 +162,7 @@ public class MainActivity extends Activity {
                     } catch (Exception ignored) {}
                 });
         }
-        web.loadUrl(ORIGIN + "/assets/index.html");
+        openUpdatedApp();
     }
     @SuppressWarnings("deprecation") @Override public void onBackPressed() {
         web.evaluateJavascript("(function(){return typeof androidHandleBack==='function' ? androidHandleBack() : false;})()", value -> {
