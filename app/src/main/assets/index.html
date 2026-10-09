@@ -15566,6 +15566,11 @@ function renderEmailCalendar() {
         if (css.display === "none" || css.visibility === "hidden") return false;
         if (el.style.right === "-100%" || el.style.right === "100%") return false;
         if (el.style.bottom === "-100%") return false;
+        // A child inside a hidden page is not a visible navigation destination.
+        for (let parent = el.parentElement; parent && parent !== document.body; parent = parent.parentElement) {
+            const parentCss = getComputedStyle(parent);
+            if (parentCss.display === "none" || parentCss.visibility === "hidden") return false;
+        }
         return true;
     };
     function capture() {
@@ -15607,6 +15612,8 @@ function renderEmailCalendar() {
     function record() {
         if (restoring || pendingBack || document.body.classList.contains("app-loading")) return;
         const next = capture();
+        // Page transitions can briefly hide every page; never save that blank frame.
+        if (!next.views.some(v => v.visible)) return;
         if (key(next) === key(current)) return;
         // A close button returning to the previous view consumes its entry.
         if (index > 0 && entries[index - 1] && key(next) === key(entries[index - 1])) {
@@ -15634,6 +15641,14 @@ function renderEmailCalendar() {
     window.androidHandleBack = function () {
         if (document.body.classList.contains("app-loading")) return true;
         if (pendingBack) return true;
+        const home = document.getElementById("home-page");
+        const homeOnly = home && visible(home) && !elements.some(el =>
+            el !== home && !home.contains(el) && visible(el));
+        if (homeOnly) {
+            // Home is the exit root even if earlier transient history entries remain.
+            resetNavigation("home-page");
+            return false;
+        }
         record();
         if (pendingBack) return true;
         if (index > 0) {
