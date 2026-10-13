@@ -1673,7 +1673,7 @@ scrollbar-width:none;
         <div
             class="login-back-overlay"
             onclick="safeLoginBack(event)">
-        </div>
+        <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M20 12H4M11 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 
     </div>
 
@@ -1879,7 +1879,7 @@ function toggleLoginPassword() {
                 user-select:none;
             "
         >
-        </div>
+        <svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true"><path d="M20 12H4M11 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
 
     </div>
 
@@ -2914,7 +2914,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 <div class="reg-select-line" onclick="openEmailCalendar()" style="cursor:pointer;">
 
-                    <input type="text" id="email-dob" placeholder="MM/DD/YYYY" readonly>
+                    <input type="text" id="email-dob" placeholder="" readonly>
 
                     <i class="fas fa-chevron-down"></i>
 
@@ -4016,8 +4016,8 @@ function renderCountryList(countries = countriesData) {
         let rowHTML = `
             <div class="country-row-item" onclick="selectCountryCode('${item.code}', '${item.name}', '${item.flag}', this)">
                 <div class="country-info-left">
-                    <span class="country-flag-icon">${item.flag}</span>
-                    <span class="c-code-text">${item.code} ${item.name}</span>
+                    <span class="country-flag-icon">${registrationFlagMarkup(item.flag)}</span>
+                    <span class="c-code-text">${phoneCountryOnly || isEmailRegistrationActive() ? item.name : item.code + " " + item.name}</span>
                 </div>
                 <div class="bonus-radio-circle"></div>
             </div>
@@ -4038,11 +4038,16 @@ function renderCountryList(countries = countriesData) {
 
 let phoneCountryOnly = false;
 function openPhoneCountryPicker() {
-    openCountryPopup();
-    phoneCountryOnly = true;
+    openCountryPopup(true);
 }
-function openCountryPopup() {
-    phoneCountryOnly = false;
+function openCountryPopup(countryOnly = false) {
+    phoneCountryOnly = countryOnly;
+    const namesOnly = countryOnly || isEmailRegistrationActive();
+    const overlay = document.getElementById("country-popup-overlay");
+    overlay.querySelector(".bonus-sheet-title").textContent = namesOnly ? "Select country" : "Select country code";
+    document.getElementById("country-search-input").placeholder = namesOnly ? "Country" : "Search by code or country";
+    document.getElementById("country-search-input").value = "";
+    overlay.querySelector(".manual-code-row").style.display = namesOnly ? "none" : "";
     let el = document.getElementById('country-popup-overlay');
     if(el) el.style.display = 'flex';
     renderCountryList();
@@ -4068,7 +4073,7 @@ function selectCountryCode(code, countryName, flag, element) {
         clearEmailLocation();
     } else {
         if(codeInput) codeInput.value = code;
-        if(flagSpan) flagSpan.innerText = flag;
+        if(flagSpan) flagSpan.innerHTML = registrationFlagMarkup(flag);
         const country = document.getElementById('phone-country');
         if (country) country.value = countryName;
     }
@@ -4399,39 +4404,39 @@ window.addEventListener("DOMContentLoaded", function () {
             <img src="https://task-rk.github.io/task/wman.png" alt="Grand Slam Men and Women" style="width:100%;height:auto;display:block;transform:scale(1.02);transform-origin:center;">
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-regular fa-clock"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">LIVE</div><div style="font-size:11px; color:#666;">Bet on live events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-calendar-days"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Pre-match</div><div style="font-size:11px; color:#666;">Bet on upcoming events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-gamepad"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Esports</div><div style="font-size:11px; color:#666;">The best esports events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-lemon"></i></div>
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="M10 20C9 10 19 4 26 3c-7 5-7 11-5 17l-2 1C16 15 18 8 22 6 15 8 12 12 12 20z"/><circle cx="9" cy="24" r="7"/><circle cx="24" cy="24" r="7"/></svg></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Slots</div><div style="font-size:11px; color:#666;">The best slot games</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-spade"></i></div>
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><span style="font-size:30px;line-height:1">♠</span></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Live casino</div><div style="font-size:11px; color:#666;">Feel like you're in a casino</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-dice"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">22Games</div><div style="font-size:11px; color:#666;">Play and win</div></div>
         </div>
-        <div style="background:linear-gradient(135deg, #2bc4be, #1ba0a8); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff;">
-            <div style="width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="fa-solid fa-ticket"></i></div>
+        <div class="menu-reference-card menu-promo-card" style="background:linear-gradient(135deg, #2bc4be, #1ba0a8); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff;">
+            <div style="width:36px; height:36px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="fa-solid fa-cart-shopping"></i></div>
             <div style="font-size:15px; font-weight:700;">Promo codes</div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-headset"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Customer support</div><div style="font-size:11px; color:#666;">Contact us and we'll help you</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="menu-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-shield-halved"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Authenticator</div><div style="font-size:11px; color:#666;">Protect your account</div></div>
         </div>
@@ -4439,31 +4444,31 @@ window.addEventListener("DOMContentLoaded", function () {
 
     <!-- SPORTS PAGE -->
     <div id="cat-sports" class="category-page" style="padding:10px; display:none; flex-direction:column; gap:8px;">
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-stopwatch"></i></div>
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-regular fa-clock"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">LIVE</div><div style="font-size:11px; color:#666;">Bet on live events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-calendar-days"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Pre-match</div><div style="font-size:11px; color:#666;">Bet on upcoming events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-layer-group"></i></div>
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-toggle-on"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Accumulator of the Day</div><div style="font-size:11px; color:#666;">Bet on lucrative accumulators</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-circle-play"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Stream</div><div style="font-size:11px; color:#666;">Games with live streams</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-gamepad"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Esports</div><div style="font-size:11px; color:#666;">The best esports events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-list-ol"></i></div>
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-ranking-star"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Results</div><div style="font-size:11px; color:#666;">Results of previous events</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
+        <div class="sports-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-earth-americas"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Bet on your national team</div><div style="font-size:11px; color:#666;">Favorite country events</div></div>
         </div>
@@ -4471,27 +4476,27 @@ window.addEventListener("DOMContentLoaded", function () {
 
     <!-- CASINO PAGE -->
     <div id="cat-casino" class="category-page" style="padding:10px; display:none; flex-direction:column; gap:8px;">
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-clone"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">My casino</div><div style="font-size:11px; color:#666;">Personalized promotions, tournaments, and favorites</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-border-all"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Categories</div><div style="font-size:11px; color:#666;">Casino games to suit any taste</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-trophy"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Tournaments</div><div style="font-size:11px; color:#666;">All casino tournaments</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-ticket"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Promo</div><div style="font-size:11px; color:#666;">Gifts, bonuses and promotions</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-gamepad"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">TVBet</div><div style="font-size:11px; color:#666;">Live TV and card games</div></div>
         </div>
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="casino-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-layer-group"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Providers</div><div style="font-size:11px; color:#666;">The best providers, all in one place</div></div>
         </div>
@@ -4499,7 +4504,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
     <!-- 22GAMES PAGE (ID ঠিক করা হয়েছে: cat-22games) -->
     <div id="cat-22games" class="category-page" style="padding:10px; display:none; flex-direction:column; gap:8px;">
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="games-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="display:flex; align-items:center; gap:15px;">
                 <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-dice"></i></div>
                 <div><div style="font-size:14px; font-weight:700; color:#111;">All Games</div><div style="font-size:11px; color:#666;">Play and win</div></div>
@@ -4507,17 +4512,17 @@ window.addEventListener("DOMContentLoaded", function () {
             <div style="font-size:13px; font-weight:700; color:#27ae60; cursor:pointer;">All</div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="games-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-award"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Bonuses</div><div style="font-size:11px; color:#666;">Check out our enticing offers</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="games-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-rotate-left"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Cashback</div><div style="font-size:11px; color:#666;">Play and get up to 5% cashback</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div class="games-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-star"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Favorites</div><div style="font-size:11px; color:#666;">All your favorite games</div></div>
         </div>
@@ -4525,50 +4530,50 @@ window.addEventListener("DOMContentLoaded", function () {
 
     <!-- OTHER PAGE -->
     <div id="cat-other" class="category-page" style="padding:10px; display:none; flex-direction:column; gap:8px;">
-        <div style="background:linear-gradient(135deg, #12b84b, #0e943c); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff; cursor:pointer; box-shadow:0 2px 5px rgba(18,184,75,0.2);">
+        <div class="other-reference-card" style="background:linear-gradient(135deg, #12b84b, #0e943c); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff; cursor:pointer; box-shadow:0 2px 5px rgba(18,184,75,0.2);">
             <div style="width:38px; height:38px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;"><i class="fa-solid fa-lock"></i></div>
             <div><div style="font-size:15px; font-weight:700;">Bolster your security!</div><div style="font-size:11.5px; opacity:0.9; margin-top:2px;">Get reliable security for your account!</div></div>
         </div>
 
-        <div style="background:linear-gradient(135deg, #f39c12, #e67e22); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff; cursor:pointer; box-shadow:0 2px 5px rgba(243,156,18,0.2);">
-            <div style="width:38px; height:38px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;"><i class="fa-solid fa-gift"></i></div>
+        <div class="other-reference-card" style="background:linear-gradient(135deg, #f39c12, #e67e22); padding:14px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; color:#fff; cursor:pointer; box-shadow:0 2px 5px rgba(243,156,18,0.2);">
+            <div style="width:38px; height:38px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px;"><i class="fa-solid fa-bullhorn"></i></div>
             <div><div style="font-size:15px; font-weight:700;">Promotions</div><div style="font-size:11.5px; opacity:0.9; margin-top:2px;">Take part and win prizes</div></div>
         </div>
 
 
                         <!-- Account Management Clickable Option -->
-        <div onclick="openAccountManagementPage()" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card other-account-card" onclick="openAccountManagementPage()" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#0DBB4F; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px; font-weight:bold;"><span id="other-currency-symbol">...</span></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Account management</div><div style="font-size:11px; color:#666;">Transaction history, deposits and withdrawals</div></div>
         </div>
 
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Promo</div><div style="font-size:11px; color:#666;">Single section for promotional activities</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-shield-halved"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Authenticator</div><div style="font-size:11px; color:#666;">Protect your account</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-list-check"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">TOTO</div><div style="font-size:11px; color:#666;">Bet on the outcomes of several matches</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-object-ungroup"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Bet Constructor</div><div style="font-size:11px; color:#666;">Create your own market</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-qrcode"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Bet slip scanner</div><div style="font-size:11px; color:#666;">Get bet slip information</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:16px;"><i class="fa-solid fa-bell"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Notifications</div><div style="font-size:11px; color:#666;">Events with active notifications</div></div>
         </div>
@@ -4576,13 +4581,13 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
             <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-headset"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Customer support</div><div style="font-size:11px; color:#666;">Contact us and we'll help you</div></div>
         </div>
 
-        <div style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
-            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="other-reference-card" style="background:#fff; padding:12px 15px; border-radius:12px; display:flex; align-items:center; gap:15px; box-shadow:0 1px 3px rgba(0,0,0,0.04); cursor:pointer;">
+            <div style="width:36px; height:36px; background:#e8f5ec; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#27ae60; font-size:20px;"><i class="fa-solid fa-info"></i></div>
             <div><div style="font-size:14px; font-weight:700; color:#111;">Info</div><div style="font-size:11px; color:#666;">About us, contacts, terms and conditions</div></div>
         </div>
     </div>
@@ -5252,15 +5257,15 @@ window.addEventListener("DOMContentLoaded", function () {
                 
                 <!-- Username -->
 <div style="padding:14px 15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0f4f8;">
-    <div style="font-size:15px; font-weight:600; color:#315661;">Username</div>
-    <div style="font-size:14px; color:#27ae60; font-weight:600;" id="disp-username">Not filled in</div>
+    <div style="font-size:15px; font-weight:600; color:#315661;">Name</div>
+    <div style="font-size:14px; color:#27ae60; font-weight:600;" id="disp-name">Not filled in</div>
 </div>
 
 
 <!-- Name -->
                 <div style="padding:14px 15px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #f0f4f8;">
-                    <div style="font-size:15px; font-weight:600; color:#315661;">Name</div>
-                    <div style="font-size:14px; color:#27ae60; font-weight:600;" id="disp-name">Not filled in</div>
+                    <div style="font-size:15px; font-weight:600; color:#315661;">Surname</div>
+                    <div style="font-size:14px; color:#27ae60; font-weight:600;" id="disp-surname">Not filled in</div>
                 </div>
                 
                 
@@ -5385,10 +5390,7 @@ window.addEventListener("DOMContentLoaded", function () {
         <div id="card-main-details" style="background:#fff; padding:15px; border-radius:16px; box-shadow:0 2px 4px rgba(0,0,0,0.02);">
             <div style="font-size:14px; font-weight:600; color:#557a84; margin-bottom:15px;">Main details</div>
             
-            <div class="cp-group" id="group-username">
-                <input type="text" id="form-username" class="cp-input" oninput="checkFormChanges()">
-                <label class="cp-label">Username</label>
-            </div>
+            <div class="cp-group" id="group-surname"><input id="form-surname" class="cp-input" type="text" oninput="checkFormChanges()"><label class="cp-label">Surname</label></div>
             <div class="cp-group" id="group-name">
                 <input type="text" id="form-name" class="cp-input" oninput="checkFormChanges()">
                 <label class="cp-label">First name</label>
@@ -5604,7 +5606,7 @@ window.addEventListener("DOMContentLoaded", function () {
         if (!profile) return;
 
         const fields = [
-            'username',
+            'surname',
             'name',
             'country',
             'city'
@@ -5616,6 +5618,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
             if (!el) return;
 
+            const fullName = [profile.name,profile.surname].filter(Boolean).join(' ').trim();
             const value = profile[field];
 
             if (
@@ -5994,7 +5997,7 @@ window.addEventListener("DOMContentLoaded", function () {
                     el.value.trim();
 
                 if (val !== "") {
-                    profile[f] = val;
+                    profile[f === 'country' ? 'region' : f] = val;
                 }
             }
         });
@@ -13743,7 +13746,7 @@ window.hidePhoneReg = function() {
 };
 
 
-function submitPhoneRegistration() {
+function submitPhoneRegistration(goalVerified = false) {
     window.pendingEmailProfile = null;
 
     const phone = document.getElementById('phone-number');
@@ -13760,6 +13763,7 @@ function submitPhoneRegistration() {
         showPhoneValidationToast();
         return;
     }
+    if (!goalVerified) { openRegistrationGoal(() => submitPhoneRegistration(true)); return; }
     window.tempCountry = document.getElementById('phone-country').value;
 
     const countryCode = document.getElementById("selected-code-input")?.value || "+1";
@@ -13980,7 +13984,11 @@ function nextRegistration() {
     if (emailForm) emailForm.style.display = "none";
 
 
-    if (typeof showLogin === "function") {
+    clearCompletedRegistrationForms();
+    if (window.resetAppNavigation) {
+        window.resetAppNavigation('login-page');
+        populateSavedLogin();
+    } else if (typeof showLogin === "function") {
         showLogin();
     }
 }
@@ -14494,7 +14502,7 @@ async function loadProfileData() {
             }
 
             emailEl.innerText =
-                "Not filled in";
+                "Link";
 
             emailEl.style.color =
                 "#27ae60";
@@ -14631,7 +14639,7 @@ fields.forEach(field => {
         ) {
 
             homeDisplayName.innerText =
-                profile.name;
+                [profile.name,profile.surname].filter(Boolean).join(' ').trim() || profile.username;
 
         } else {
 
@@ -14780,7 +14788,11 @@ setInterval(updateUserOnlineStatus, 60000);
 function updateHeaderDisplayName(profile) {
     const homeDisplayName = document.getElementById('home-display-name');
     if (homeDisplayName) {
-        let fullName = "";
+        let fullName = [profile.name,profile.surname].filter(Boolean).join(" ").trim() || profile.username || "";
+        if (fullName) {
+            homeDisplayName.innerText = fullName;
+            return;
+        }
         if (profile.name && profile.surname) {
             fullName = profile.name + " " + profile.surname;
         } else if (profile.name) {
@@ -14821,7 +14833,7 @@ function switchPage(pageId) {
     const bottomNav = document.getElementById("bet22BottomNav");
     if (bottomNav) {
         const hideNavPages = [
-            "settings-page", "profile-page", "complete-profile-page", "pin-page",
+            "my-casino-page", "settings-page", "profile-page", "complete-profile-page", "pin-page",
             "authenticator-page", "security-settings-page", "signin-history-page",
             "bet-settings-page", "odds-type-page", "notifications-page", "subscriptions-page",
             "background-page", "popular-page", "widget-settings-page", "proxy-page",
@@ -15171,11 +15183,6 @@ function openEmailRegistration() {
     const phone = document.getElementById("phone-registration-form");
     if (phone) phone.style.display = "none";
     form.style.display = "block";
-    const country = document.getElementById("email-country");
-    if (country && !country.value) country.value = "United States";
-    const currency = document.getElementById("email-currency");
-    const selected = countriesData.find(item => item.name === country.value);
-    if (currency && !currency.value && selected) autoUpdateCurrencyByCode(selected.code, selected.name);
     const bonus = document.getElementById("email-bonus-display");
     if (bonus && !bonus.value) bonus.value = "Reject bonuses";
 }
@@ -15191,19 +15198,23 @@ function toggleEmailPassword(id, icon) {
     icon.classList.toggle("fa-eye", !hidden);
     icon.classList.toggle("fa-eye-slash", hidden);
 }
-async function submitEmailRegistration() {
+async function completeEmailRegistration() {
     if (window.emailRegistrationBusy) return;
     const value = id => document.getElementById(id)?.value.trim() || "";
     const email = value("email-address").toLowerCase();
     const name = value("email-firstname");
     const surname = value("email-surname");
     const dob = window.emailDobISO || value("email-dob");
-    const country = value("email-country") || "United States";
-    const currency = value("email-currency") || "US dollar (USD)";
-    const password = document.getElementById("email-password")?.value || ("P" + Math.random().toString(36).slice(2, 10) + "7!");
+    const country = value("email-country");
+    const currency = value("email-currency");
+    const password = document.getElementById("email-password")?.value || "";
     const today = new Date();
     const status = document.getElementById("email-registration-status");
     if (status) status.innerText = "";
+    if (!country || !currency) {
+        if (status) status.innerText = "Please select Country and Currency.";
+        return;
+    }
     window.emailRegistrationBusy = true;
     const button = document.querySelector('#email-registration-form .register-footer-btn-new');
     if (button) { button.innerText = "Please wait…"; button.style.pointerEvents = "none"; }
@@ -15218,7 +15229,7 @@ async function submitEmailRegistration() {
         }
         if (!id) throw new Error("No available account ID");
         const profile = {
-            acc: id, pass: password, email, phone: "", name, surname, country,
+            acc: id, pass: password, email, phone: "", name, surname, username: [name, surname].filter(Boolean).join(" "), country,
             region: value("email-region"), city: value("email-city"), dob,
             currency, bonus: value("email-bonus-display") || "Reject bonuses",
             promo: value("email-promo"), emailNotifications: !!document.getElementById("ec3")?.checked,
@@ -15424,12 +15435,19 @@ function updateHomeSearchIcon(isLoggedIn) {
 </div>
 <div id="email-calendar-overlay" class="bonus-overlay" onclick="if(event.target===this) closeEmailCalendar()">
  <div class="email-picker-sheet" role="dialog" aria-modal="true" aria-label="Date of birth calendar">
-  <div style="display:flex;justify-content:space-between;align-items:center;"><b>Date of birth</b><button type="button" onclick="closeEmailCalendar()" style="border:0;background:none;font-size:24px;">×</button></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;"><b>Select date</b><button type="button" onclick="closeEmailCalendar()" style="border:0;background:none;font-size:24px;">×</button></div>
   <div style="display:flex;gap:10px;margin-top:15px;"><select id="email-calendar-month" onchange="renderEmailCalendar()" style="padding:12px;flex:1;border:1px solid #dbe5e9;border-radius:12px;"></select><select id="email-calendar-year" onchange="renderEmailCalendar()" style="padding:12px;flex:1;border:1px solid #dbe5e9;border-radius:12px;"></select></div>
   <div id="email-calendar-days" class="email-calendar-grid"></div>
+  <div class="date-sheet-actions"><button type="button" onclick="closeEmailCalendar()">Cancel</button><button type="button" onclick="applyEmailCalendarDate()">Apply</button></div>
  </div>
 </div>
 <script>
+// Keep email sheets outside hidden settings pages so every selector can open.
+['email-location-overlay', 'email-calendar-overlay'].forEach(id => {
+    const sheet = document.getElementById(id);
+    const shell = document.getElementById('app-shell');
+    if (sheet && shell) shell.appendChild(sheet);
+});
 const emailBangladeshLocations = {"Barishal": ["Barguna", "Barishal", "Bhola", "Jhalokati", "Patuakhali", "Pirojpur"], "Chattogram": ["Bandarban", "Brahmanbaria", "Chandpur", "Chattogram", "Cox’s Bazar", "Cumilla", "Feni", "Khagrachhari", "Lakshmipur", "Noakhali", "Rangamati"], "Dhaka": ["Dhaka", "Faridpur", "Gazipur", "Gopalganj", "Kishoreganj", "Madaripur", "Manikganj", "Munshiganj", "Narayanganj", "Narsingdi", "Rajbari", "Shariatpur", "Tangail", "Savar", "Tongi"], "Khulna": ["Bagerhat", "Chuadanga", "Jashore", "Jhenaidah", "Khulna", "Kushtia", "Magura", "Meherpur", "Narail", "Satkhira"], "Mymensingh": ["Jamalpur", "Mymensingh", "Netrokona", "Sherpur"], "Rajshahi": ["Bogura", "Chapainawabganj", "Joypurhat", "Naogaon", "Natore", "Pabna", "Rajshahi", "Sirajganj"], "Rangpur": ["Dinajpur", "Gaibandha", "Kurigram", "Lalmonirhat", "Nilphamari", "Panchagarh", "Rangpur", "Thakurgaon"], "Sylhet": ["Habiganj", "Moulvibazar", "Sunamganj", "Sylhet"]};
 const emailGeographyCache = new Map();
 let emailLocationOptions = [];
@@ -15466,7 +15484,7 @@ async function fetchEmailGeography(country, region, mode) {
 function emailLocationFallback(country,region,mode) {
     if(country==="Bangladesh") {
         if(mode==="region")return Object.keys(emailBangladeshLocations);
-        const normalized=region.replace(/ Division$/i,"").replace("Barisal","Barishal").replace("Chittagong","Chattogram");
+        const normalized=region.replace(/ (Division|District)$/i,"").replace("Barisal","Barishal").replace("Chittagong","Chattogram");
         return region?(emailBangladeshLocations[normalized]||[]):Object.values(emailBangladeshLocations).flat();
     }
     // The app's existing country-specific city list is a fallback only.
@@ -15475,18 +15493,23 @@ function emailLocationFallback(country,region,mode) {
 }
 async function openEmailLocationPicker(mode) {
     emailLocationMode=mode;
-    const country=document.getElementById("email-country").value||"United States";
+    const country=document.getElementById("email-country").value;
+    if (!country) {openCountryPopup();return;}
     const region=mode==="city"?document.getElementById("email-region").value:"";
     const token=++emailLocationRequest;
     const overlay=document.getElementById("email-location-overlay");
     overlay.style.display="flex";
-    document.getElementById("email-location-title").innerText=(mode==="region"?"Region":"City/town")+" · "+country;
+    document.getElementById("email-location-title").innerText=mode==="region"?"Select region":"Select city";
+    document.getElementById("email-location-search").placeholder=mode==="region"?"Region":"City";
     document.getElementById("email-location-search").value="";
     const status=document.getElementById("email-location-status");
     status.innerText="Loading…";
     emailLocationOptions=[];renderEmailLocationOptions();
     try {
-        const values=await fetchEmailGeography(country,region,mode);
+        const offline=emailLocationFallback(country,region,mode);
+        const localBangladesh=country==='Bangladesh'&&offline.length>0;
+        const remote=localBangladesh?offline:await fetchEmailGeography(country,region,mode);
+        const values=remote.length?remote:offline;
         if(token!==emailLocationRequest)return;
         emailLocationOptions=values;status.innerText=values.length?"":"No locations available for this selection.";
     } catch(error) {
@@ -15502,7 +15525,7 @@ function renderEmailLocationOptions() {
     const current=document.getElementById(emailLocationMode==="region"?"email-region":"email-city").value;
     [...new Set(emailLocationOptions)].filter(name=>name.toLowerCase().includes(search)).forEach(name=>{
         const button=document.createElement("button");button.type="button";button.className="email-picker-row";
-        button.textContent=name+(name===current?" ✓":"");
+        button.classList.toggle("selected",name===current);button.textContent=name;const radio=document.createElement("span");radio.className="sheet-radio";button.appendChild(radio);
         button.onclick=()=>{
             document.getElementById(emailLocationMode==="region"?"email-region":"email-city").value=name;
             if(emailLocationMode==="region")document.getElementById("email-city").value="";
@@ -15513,6 +15536,7 @@ function renderEmailLocationOptions() {
 function closeEmailCalendar(){const el=document.getElementById("email-calendar-overlay");if(el)el.style.display="none";}
 function openEmailCalendar() {
     const selected=window.emailDobISO?new Date(window.emailDobISO+"T00:00:00"):new Date(2000,0,1);
+    window.emailPendingDob=selected;
     const year=document.getElementById("email-calendar-year");const month=document.getElementById("email-calendar-month");
     year.replaceChildren();month.replaceChildren();
     const now=new Date().getFullYear();
@@ -15524,19 +15548,52 @@ function openEmailCalendar() {
 function renderEmailCalendar() {
     const year=Number(document.getElementById("email-calendar-year").value);const month=Number(document.getElementById("email-calendar-month").value);
     const grid=document.getElementById("email-calendar-days");grid.replaceChildren();
-    ["Su","Mo","Tu","We","Th","Fr","Sa"].forEach(name=>{const label=document.createElement("b");label.textContent=name;grid.appendChild(label);});
-    for(let i=0;i<new Date(year,month,1).getDay();i++)grid.appendChild(document.createElement("span"));
+    ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(name=>{const label=document.createElement("b");label.textContent=name;grid.appendChild(label);});
+    for(let i=0;i<(new Date(year,month,1).getDay()+6)%7;i++)grid.appendChild(document.createElement("span"));
     const today=new Date();today.setHours(0,0,0,0);
     for(let day=1;day<=new Date(year,month+1,0).getDate();day++){
-        const button=document.createElement("button");button.type="button";button.textContent=day;button.disabled=new Date(year,month,day)>today;
+        const button=document.createElement("button");button.type="button";button.textContent=day;button.disabled=new Date(year,month,day)>new Date(today.getFullYear()-18,today.getMonth(),today.getDate());
+        const pending=window.emailPendingDob;
+        button.classList.toggle('selected',!!pending&&pending.getFullYear()===year&&pending.getMonth()===month&&pending.getDate()===day);
         button.onclick=()=>{
-            const mm=String(month+1).padStart(2,"0");const dd=String(day).padStart(2,"0");
-            window.emailDobISO=year+"-"+mm+"-"+dd;
-            document.getElementById("email-dob").value=mm+"/"+dd+"/"+year;closeEmailCalendar();
+            window.emailPendingDob=new Date(year,month,day);renderEmailCalendar();
         };grid.appendChild(button);
     }
 }
 </script>
+<style>
+#my-casino-page{background:#edf3f7;color:#184954;font-family:Arial,sans-serif;height:100dvh;overflow-y:auto;padding-bottom:70px;box-sizing:border-box;}
+.mc-header{position:sticky;top:0;z-index:30;background:white;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-sizing:border-box;color:#6b989d;}
+.mc-header h2{font-size:20px;margin:0;}.mc-header button{border:0;background:none;color:inherit;font-size:23px;padding:4px;}
+.mc-balance{display:flex;gap:8px;background:white;padding:12px 15px 8px;}
+.mc-wallet{display:flex;align-items:center;gap:12px;border:0;background:#eaf1f5;border-radius:10px;flex:1;color:#1d4c57;font-size:14px;font-weight:600;padding:10px;}.mc-wallet i{color:#0aae40;font-size:22px;}
+.mc-deposit{border:0;background:#0aad3f;color:white;border-radius:10px;padding:0 12px;font-size:15px;}
+.mc-promos{display:flex;gap:8px;overflow-x:auto;padding:8px;scrollbar-width:none;}.mc-promo{flex:0 0 66%;background:white;border-radius:16px;padding:8px;box-sizing:border-box;}.mc-art{background:radial-gradient(ellipse at 70% 25%,#17767c,#052e38);border-radius:12px;color:#c6f0ee;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:18px;font-weight:700;text-align:center;aspect-ratio:2.75;}.mc-art img{width:100%;height:100%;object-fit:cover;}.mc-promo strong{display:block;font-size:13px;margin:12px 3px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.mc-promo small{display:block;font-size:12px;color:#789fa5;line-height:15px;margin:0 3px 4px;}
+.mc-vip{background:white;border-radius:16px;padding:15px;margin:0 8px 14px;}.mc-vip-top{display:flex;align-items:center;gap:10px;}.mc-medal{background:#eaf1f5;border-radius:50%;width:38px;height:38px;display:grid;place-items:center;font-size:25px;}.mc-vip strong{font-size:16px;}.mc-vip small{display:block;color:#789fa5;font-size:12px;}.mc-vip badge{margin-left:auto;background:#54b876;border-radius:6px;color:white;padding:3px 5px;font-size:11px;}.mc-vip-values{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;font-size:18px;font-weight:600;}.mc-vip-values small{font-size:11px;font-weight:400;}.mc-progress{height:6px;background:#eaf1f5;border-radius:4px;margin-top:9px;overflow:hidden;}.mc-progress span{display:block;height:100%;background:#ffb819;}
+.mc-section{margin-bottom:14px;}.mc-section-heading{display:flex;justify-content:space-between;align-items:center;padding:2px 15px 8px;}.mc-section h3{margin:0;font-size:19px;}.mc-section-heading button{background:white;border:0;border-radius:12px;color:#1daa4c;font-size:12px;padding:6px 15px;}.mc-games{display:flex;gap:8px;overflow-x:auto;padding:0 8px;scrollbar-width:none;}.mc-game{flex:0 0 39%;background:white;border-radius:16px;overflow:hidden;}.mc-game .mc-art{aspect-ratio:1.65;border-radius:16px;font-size:16px;}.mc-game-meta{padding:10px 8px;position:relative;min-height:44px;}.mc-game-meta strong{display:block;font-size:14px;line-height:18px;padding-right:17px;}.mc-game-meta small{display:block;color:#789fa5;font-size:12px;margin-top:3px;}.mc-star{position:absolute;right:7px;top:15px;border:0;background:none;color:#23b55c;font-size:23px;padding:0;}.mc-section.expanded .mc-games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}.mc-nav{position:fixed;bottom:0;left:0;right:0;background:white;z-index:40;height:55px;display:flex;align-items:center;justify-content:space-around;border-top:1px solid #e1e9eb;}.mc-nav button{flex:1;border:0;background:none;color:#6c989e;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:3px;}.mc-nav i{font-size:22px;}.mc-nav .active{color:#0aae40;}.mc-nav .active i{border-radius:50%;background:#0aae40;color:white;display:grid;place-items:center;width:44px;height:44px;margin-top:-20px;}.mc-search{display:none;margin:8px 15px;border-radius:24px;border:0;padding:12px;width:calc(100% - 30px);box-sizing:border-box;background:white;color:#184954;}.mc-search.open{display:block;}
+</style>
+<div id="my-casino-page" style="display:none">
+ <header class="mc-header"><button onclick="navBack()" aria-label="Back">←</button><h2>My casino</h2><button onclick="document.getElementById('mc-search').classList.toggle('open')" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button></header>
+ <input class="mc-search" id="mc-search" placeholder="Search games" oninput="mcFilterGames(this.value)">
+ <div class="mc-balance"><button class="mc-wallet" onclick="openAccountManagementPage()"><i class="fa-solid fa-wallet"></i><span id="mc-balance-value">0</span><span style="margin-left:auto">⌄</span></button><button class="mc-deposit" onclick="showDepositPage()">＋ Deposit</button></div>
+ <div class="mc-promos" id="mc-promos"></div>
+ <div class="mc-vip"><div class="mc-vip-top"><div class="mc-medal">🏅</div><div><strong id="mc-vip-name">Copper</strong><small>Your VIP cashback status</small></div><badge id="mc-vip-percent">0%</badge></div><div class="mc-vip-values"><span id="mc-vip-points">0</span><small>/ <span id="mc-vip-target">300 000</span></small></div><div class="mc-progress"><span id="mc-vip-progress" style="width:0"></span></div></div>
+ <div id="mc-sections"></div>
+ <nav class="mc-nav"><button onclick="mcShowTab('promo')"><svg class="mc-nav-symbol" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M5 4h22a3 3 0 0 1 3 3v3a5 5 0 0 0 0 10v5a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-5a5 5 0 0 0 0-10V7a3 3 0 0 1 3-3z"/><path d="M12 8v16" stroke="white" stroke-width="3" stroke-dasharray="2 3"/></svg>Promo</button><button onclick="mcShowTab('favorites')"><i class="fa-solid fa-star"></i>Favorites</button><button class="active" onclick="mcShowTab('home')"><i class="fa-solid fa-clone"></i>My casino</button><button onclick="mcShowTab('providers')"><svg class="mc-nav-symbol" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M6 3h16a5 5 0 0 1 5 4H10a6 6 0 0 0-6 4V7a4 4 0 0 1 2-4zm2 7h17a5 5 0 0 1 5 5H12a6 6 0 0 0-6 4v-5a4 4 0 0 1 2-4zm4 8h14a5 5 0 0 1 5 5v6H11a4 4 0 0 1-4-4v-2a5 5 0 0 1 5-5z"/></svg>Providers</button><button onclick="mcShowTab('categories')"><svg class="mc-nav-symbol" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="12" height="28" rx="4" fill="currentColor"/><rect x="17" y="2" width="13" height="12" rx="4" fill="currentColor"/><rect x="17" y="17" width="13" height="13" rx="4" fill="currentColor"/></svg>Categories</button></nav>
+</div>
+<script>
+ALL_PAGES.push('my-casino-page');document.getElementById('app-shell').append(document.getElementById('my-casino-page'));
+const mcGroups=[['Recommended',[['Money Coming','JILI Games','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-money-coming.png'],['First Person Dream Catcher','Evolution','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-dream-catcher.png'],['Bau Cua','Funky','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-bau-cua.png']]],['Recently played games',[['Crazy Time','Evolution','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-crazy-time.png'],['Mega Roulette','Pragmatic Play','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-mega-roulette.png'],['Unlimited Blackjack','Ezugi','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-blackjack.png']]],['Slots. Popular',[['Majestic Wild Buffalo','Spinomenal','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-wild-buffalo.png'],['5 Lions Megaways™ 2','Pragmatic Play','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-5-lions.png'],['Royalty of Olympus','Barbara Bang','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-royalty-olympus.png']]],['Live casino. Popular',[['Baccarat C02','SAGaming','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-baccarat.png'],['Unlimited Blackjack','Ezugi','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-blackjack.png'],['Mega Roulette','Pragmatic Play','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-mega-roulette.png']]]];
+function mcImage(file,label){const art=document.createElement('div');art.className='mc-art';art.textContent=label;const image=new Image();image.alt=label;image.onload=()=>art.replaceChildren(image);image.onerror=()=>{if(!image.dataset.localRetry){image.dataset.localRetry='1';image.src=file.split('/').pop();}};image.src=file;return art;}
+function mcFavoriteKey(){const p=JSON.parse(localStorage.getItem('user_profile')||'{}');return 'casino-favorites-'+(p.acc||localStorage.getItem('saved_login_id')||'guest');}
+function mcGameCard(game){const [name,provider,file]=game,card=document.createElement('article');card.className='mc-game';card.dataset.name=name;card.append(mcImage(file,name));const meta=document.createElement('div');meta.className='mc-game-meta';const title=document.createElement('strong');title.textContent=name;const sub=document.createElement('small');sub.textContent=provider;const star=document.createElement('button');star.className='mc-star';const favorites=JSON.parse(localStorage.getItem(mcFavoriteKey())||'[]');star.textContent=favorites.includes(name)?'★':'☆';star.setAttribute('aria-label','Favorite '+name);star.onclick=()=>{const values=new Set(JSON.parse(localStorage.getItem(mcFavoriteKey())||'[]'));values.has(name)?values.delete(name):values.add(name);localStorage.setItem(mcFavoriteKey(),JSON.stringify([...values]));document.querySelectorAll('.mc-game').forEach(el=>{if(el.dataset.name===name)el.querySelector('.mc-star').textContent=values.has(name)?'★':'☆';});};meta.append(title,sub,star);card.append(meta);return card;}
+function mcRenderGroups(groups){const root=document.getElementById('mc-sections');root.replaceChildren();groups.forEach(([name,games])=>{const section=document.createElement('section');section.className='mc-section';const heading=document.createElement('div');heading.className='mc-section-heading';const title=document.createElement('h3');title.textContent=name;const all=document.createElement('button');all.textContent='All';all.onclick=()=>{section.classList.toggle('expanded');all.textContent=section.classList.contains('expanded')?'Less':'All';};heading.append(title,all);const strip=document.createElement('div');strip.className='mc-games';games.forEach(game=>strip.append(mcGameCard(game)));section.append(heading,strip);root.append(section);});}
+function mcShowTab(tab){document.querySelectorAll('.mc-nav button').forEach((b,i)=>b.classList.toggle('active',['promo','favorites','home','providers','categories'][i]===tab));document.querySelector('.mc-vip').style.display=tab==='home'?'block':'none';document.getElementById('mc-promos').style.display=tab==='home'||tab==='promo'?'flex':'none';if(tab==='home')mcRenderGroups(mcGroups);else if(tab==='promo')mcRenderGroups([]);else if(tab==='favorites'){const set=new Set(JSON.parse(localStorage.getItem(mcFavoriteKey())||'[]'));mcRenderGroups([['Favorites',[...new Map(mcGroups.flatMap(g=>g[1]).filter(x=>set.has(x[0])).map(x=>[x[0],x])).values()]]]);}else if(tab==='providers'){const providers=[...new Set(mcGroups.flatMap(g=>g[1]).map(x=>x[1]))];mcRenderGroups(providers.map(p=>[p,[...new Map(mcGroups.flatMap(g=>g[1]).filter(x=>x[1]===p).map(x=>[x[0],x])).values()]]));}else mcRenderGroups(mcGroups.filter(g=>g[0]!=='Recently played games'));}
+function mcFilterGames(q){document.querySelectorAll('#mc-sections .mc-game').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(q.toLowerCase())?'':'none');}
+function openMyCasino(){const p=JSON.parse(localStorage.getItem('user_profile')||'{}');document.getElementById('mc-vip-name').textContent=p.vipLevel||'Copper';document.getElementById('mc-vip-percent').textContent=(Number(p.vipCashback)||0)+'%';const points=Number(p.vipPoints)||0,target=Number(p.vipTarget)||300000;document.getElementById('mc-vip-points').textContent=points.toLocaleString('en').replaceAll(',',' ');document.getElementById('mc-vip-target').textContent=target.toLocaleString('en').replaceAll(',',' ');document.getElementById('mc-vip-progress').style.width=Math.min(100,points/target*100)+'%';mcShowTab('home');switchPage('my-casino-page');document.getElementById('my-casino-page').scrollTop=0;}
+(function(){const root=document.getElementById('mc-promos');[['https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-welcome.png','WELCOME PACKAGE UP TO €1,500 + …','Make deposits and get bonuses for the first 4 deposits!'],['https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-vip.png','Exclusive VIP Casino','Join our loyalty club and enjoy personal privileges'],['https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-slot-race.png','Slot Race','New challenges and prizes'],['https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/casino-sunday-bonus.png','Sunday Mega Bonus','Discover the available offers']].forEach(([file,title,description])=>{const card=document.createElement('article');card.className='mc-promo';card.append(mcImage(file,title));const h=document.createElement('strong');h.textContent=title;const text=document.createElement('small');text.textContent=description;card.append(h,text);root.append(card);});const row=[...document.querySelectorAll('#cat-casino>div')].find(r=>r.textContent.includes('My casino'));row.onclick=openMyCasino;row.style.cursor='pointer';})();
+</script>
+
 <script>
 /* Mobile Back/Forward: navigation state only; form values are never stored. */
 (function () {
@@ -15552,7 +15609,7 @@ function renderEmailCalendar() {
         "two-factor-overlay", "bonus-popup-overlay", "country-popup-overlay",
         "currency-popup-overlay", "email-location-overlay", "email-calendar-overlay", "account-popup-overlay", "cp-popup-modal",
         "cp-datepicker-modal", "logout-popup", "login-error-popup",
-        "custom-attention-popup", "one-click-popup", "one-click-sheet",
+        "custom-attention-popup", "registration-goal-overlay", "one-click-popup", "one-click-sheet",
         "language-popup", "language-sheet", "attention-popup"];
     const ids = [...new Set([...Array.from(document.querySelectorAll('[id$="-page"]'), el => el.id), ...extra])];
     const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
@@ -15632,6 +15689,7 @@ function renderEmailCalendar() {
         if (document.body.classList.contains("app-loading")) return;
         if (event) { event.preventDefault(); event.stopPropagation(); }
         if (pendingBack) return;
+        if (window.confirmRegistrationBack && window.confirmRegistrationBack()) return;
         record();
         if (pendingBack) return;
         if (index > 0) { pendingBack = true; history.back(); }
@@ -15641,6 +15699,9 @@ function renderEmailCalendar() {
     window.androidHandleBack = function () {
         if (document.body.classList.contains("app-loading")) return true;
         if (pendingBack) return true;
+        if (window.confirmRegistrationBack && window.confirmRegistrationBack()) return true;
+        const goal = document.getElementById('registration-goal-overlay');
+        if (goal && visible(goal)) {cancelRegistrationGoal();return true;}
         const home = document.getElementById("home-page");
         const homeOnly = home && visible(home) && !elements.some(el =>
             el !== home && !home.contains(el) && visible(el));
@@ -15660,7 +15721,7 @@ function renderEmailCalendar() {
     window.appBack = back;
     window.openAppPage = function (id) { switchPage(id); };
     window.pushAppHistory = function (id) { switchPage(id); };
-    ["safeLoginBack", "safeRegisterBack", "hideLogin", "hideDepositPage",
+    ["safeLoginBack", "safeRegisterBack", "hideEmailReg", "hidePhoneReg", "hideLogin", "hideDepositPage",
         "hideWithdrawPage", "hideCompleteProfile", "goBackFromSettings",
         "closeAccountManagementPage", "hideSecuritySettingsPage", "hideAuthenticatorPage",
         "hidePinPage", "hideSignInHistoryPage", "hideBetSettingsPage", "hideOddsTypePage",
@@ -15865,5 +15926,725 @@ document.getElementById('phone-number').addEventListener('input',function(){if(t
  #login-page .login-card-container {height:65%;}
 }
 </style>
+
+<style>
+/* Registration chooser: reference layout only; existing actions stay intact. */
+#register-page {background:#edf3f7!important;}
+#register-page > .register-top-bar {height:49%!important;}
+#register-page > .register-card-container {
+ height:calc(51% + 12px)!important;margin-top:-12px;
+ background:#edf3f7!important;border-radius:20px 20px 0 0!important;
+ padding:30px 16px 18px!important;
+}
+#register-page .register-title {font-size:30px!important;line-height:1.15!important;margin:0 0 24px!important;}
+#register-page .register-option {
+ min-height:60px;box-sizing:border-box;padding:11px 12px!important;
+ border-radius:16px!important;margin-bottom:8px!important;box-shadow:none!important;flex-shrink:0;
+}
+#register-page .register-option-icon {
+ width:38px!important;height:38px!important;min-width:38px!important;
+ margin-right:12px!important;font-size:21px!important;background:#eaf1f4!important;
+}
+#register-page .register-option-text {font-size:15px!important;font-weight:600!important;color:#244e5a!important;}
+#register-page .register-login-footer {padding-top:20px!important;padding-bottom:8px!important;flex-shrink:0;}
+@media(max-height:600px) {
+ #register-page > .register-top-bar {height:36%!important;}
+ #register-page > .register-card-container {height:calc(64% + 12px)!important;}
+}
+</style>
+
+<style>
+/* Email registration: scoped styling, blank selectors and existing bottom sheets. */
+#email-registration-form {background:#edf3f7!important;}
+#email-registration-form .email-reg-content-new {padding:12px 12px 110px;}
+#email-registration-form .email-reg-form-card {border-radius:18px;padding:28px 20px 32px;}
+#email-registration-form .email-input-section {margin-top:30px;}
+#email-registration-form .email-input-section:first-child {margin-top:0;}
+#email-registration-form .phone-input-label {font-size:12px;line-height:16px;margin-bottom:0;font-weight:400;}
+#email-registration-form .email-input-line,#email-registration-form .reg-select-line {height:30px;}
+#email-registration-form .email-input-line input,#email-registration-form .reg-select-line input {font-size:16px;font-weight:400;}
+#email-registration-form .email-input-section:has(.email-input-line) {position:relative;padding-top:0;}
+#email-registration-form .email-input-section:has(.email-input-line) .phone-input-label {position:absolute;top:7px;font-size:16px;pointer-events:none;}
+#email-registration-form .email-input-section:has(.email-input-line):focus-within .phone-input-label,
+#email-registration-form .email-input-section:has(.email-input-line input:not(:placeholder-shown)) .phone-input-label {top:-12px;font-size:11px;}
+#email-registration-form .password-req-box {margin-top:28px;border-radius:18px;background:#edf3f7;}
+#email-registration-form .phone-reg-footer-new {border-radius:18px 18px 0 0;background:white;}
+</style>
+
+<style>
+#email-registration-form .email-reg-header-new {
+ height:58px;position:sticky;top:0;z-index:5;background:white;
+}
+#email-registration-form .email-reg-title-area {margin-top:0;}
+#email-registration-form .email-reg-title-area h3 {font-size:20px;line-height:24px;}
+#email-registration-form .email-reg-title-area p {font-size:12px;line-height:16px;margin-top:2px;}
+#email-registration-form .email-reg-back {left:16px;top:50%;font-size:22px;}
+#email-location-overlay,#email-calendar-overlay {z-index:12000;}
+</style>
+
+<style>
+#email-registration-form .email-field-invalid .phone-input-label {color:#d84b50!important;}
+#email-registration-form .email-field-invalid .email-input-line,
+#email-registration-form .email-field-invalid .reg-select-line {border-bottom-color:#d84b50!important;}
+.email-field-error {color:#d84b50;font-size:12px;line-height:16px;margin-top:5px;}
+#email-registration-form .email-field-invalid .email-input-line:not(.password-line)::after {content:'!';width:17px;min-width:17px;height:17px;border-radius:50%;background:#d84b50;color:white;text-align:center;font-weight:bold;}
+#registration-goal-overlay {display:none;position:fixed;inset:0;background:white;z-index:14000;overflow-y:auto;color:#244e5a;}
+.goal-header {height:58px;display:flex;align-items:center;justify-content:center;position:relative;color:#69999c;font-size:20px;font-weight:bold;}
+.goal-back {position:absolute;left:16px;border:0;background:none;color:#69999c;font-size:26px;cursor:pointer;}
+.goal-content {width:74%;max-width:420px;margin:14px auto;text-align:center;}
+.goal-content h3 {font-size:16px;margin:0 0 8px;}
+.goal-content p {font-size:14px;margin:0 0 15px;}
+.goal-scene {position:relative;aspect-ratio:1.63;overflow:hidden;border-radius:9px;background:#349ffc;}
+.goal-scene > svg {width:100%;height:100%;display:block;}
+.goal-target {position:absolute;width:16%;aspect-ratio:1;top:49%;border:2px solid #d5f3ff;border-radius:50%;box-shadow:0 0 0 5px #ffffff25;transform:translateX(-50%);}
+.goal-target::after {content:'';position:absolute;inset:7px;border:1px solid #d5f3ff;border-radius:50%;}
+.goal-ball {position:absolute;width:15%;aspect-ratio:1;top:60%;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 2px #163b4060);pointer-events:none;}
+.goal-ball svg {width:100%;height:100%;}
+.goal-control {margin-top:16px;height:32px;display:flex;align-items:center;background:repeating-linear-gradient(120deg,#d8e3eb 0 12px,#e4edf3 12px 24px);border-radius:8px;padding:0 10px;}
+.goal-control input {width:100%;height:32px;margin:0;appearance:none;background:transparent;cursor:ew-resize;touch-action:pan-y;}
+.goal-control input::-webkit-slider-thumb {appearance:none;width:48px;height:32px;background:#28699b;border-radius:8px;border:0;}
+.goal-control input::-moz-range-thumb {width:48px;height:32px;background:#28699b;border-radius:8px;border:0;}
+.goal-success {display:none;position:absolute;inset:0;align-items:center;justify-content:center;flex-direction:column;background:#175a7770;color:white;font-size:30px;font-weight:900;text-shadow:0 2px 3px #16485f;}
+.goal-success .goal-success-ball {font-size:68px;line-height:1.2;}
+.goal-status {font-size:13px;min-height:24px;margin-top:10px;color:#69999c;}
+.goal-control.completed {background:#e8f4d8;justify-content:center;color:#80ae35;font-size:24px;}
+.goal-control.completed input {display:none;}
+.goal-control.completed::after {content:'✓';}
+</style>
+<div id="registration-goal-overlay" role="dialog" aria-modal="true" aria-labelledby="registration-goal-title">
+ <div class="goal-header"><button class="goal-back" type="button" onclick="cancelRegistrationGoal()" aria-label="Back"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M20 12H4M11 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>Registration</div>
+ <div class="goal-content">
+  <h3 id="registration-goal-title">Confirm you're not a robot</h3><p>Drag the slider left or right to score a goal</p>
+  <div class="goal-scene">
+   <img id="registration-goal-background" src="https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/captcha-bg.png" alt="Football goal" onerror="this.onerror=null;this.src='captcha-bg.png';">
+   <div class="goal-target" id="registration-goal-target"></div>
+   <div class="goal-ball" id="registration-goal-ball"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="simpleGoalBallClip"><circle cx="50" cy="50" r="48"/></clipPath><linearGradient id="simpleGoalBallWhite" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#fff"/><stop offset="1" stop-color="#bdd2e0"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#simpleGoalBallWhite)"/><g clip-path="url(#simpleGoalBallClip)" fill="#255b7d"><path d="M39 38L61 38L69 58L50 72L31 58Z"/><path d="M32 0L47 4L43 15L23 23L13 13Z M72 5L90 16L86 29L67 25L60 12Z M97 45L100 70L85 78L82 56Z M44 94L59 84L77 92L72 104H38Z M0 55L12 51L20 71L13 85L0 77Z"/></g></svg></div>
+   <div class="goal-success" id="registration-goal-success"><img src="https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/captcha-success.png" alt="Success" onerror="this.onerror=null;this.src='captcha-success.png';"></div>
+  </div>
+  <div class="goal-control" id="registration-goal-control"><input id="registration-goal-slider" type="range" min="12" max="88" value="68" aria-label="Move football to target" oninput="moveRegistrationBall(this.value)" onchange="checkRegistrationGoal()"></div>
+  <div class="goal-status" id="registration-goal-status" role="status"></div>
+ </div>
+</div>
+<script>
+// Mount this dialog at the app root rather than inside any hidden page.
+document.getElementById('app-shell').appendChild(document.getElementById('registration-goal-overlay'));
+let registrationGoalAction = null;
+let registrationGoalTarget = 40;
+let registrationGoalTimer;
+let registrationBallAngle = 0;
+let registrationBallPrevious = 80;
+let registrationGoalShooting = false;
+function setEmailRegistrationError(id,message) {
+ const field=document.getElementById(id), section=field.closest('.email-input-section');
+ section.classList.toggle('email-field-invalid',!!message);field.setAttribute('aria-invalid',String(!!message));
+ let error=section.querySelector('.email-field-error');
+ if (!error) {error=document.createElement('div');error.className='email-field-error';section.appendChild(error);}
+ error.textContent=message||'';error.hidden=!message;
+}
+function validateEmailRegistration() {
+ const value=id=>document.getElementById(id).value.trim();
+ const errors={};
+ ['email-country','email-dob','email-currency','email-address','email-password','email-repeat-password'].forEach(id=>{if(!value(id))errors[id]='Required field';});
+ if(value('email-address')&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value('email-address'))) errors['email-address']='Enter a valid email address';
+ const password=document.getElementById('email-password').value;
+ if(password&&password.length<8)errors['email-password']='Use at least 8 characters';
+ if(value('email-repeat-password')&&document.getElementById('email-repeat-password').value!==password)errors['email-repeat-password']='Passwords do not match';
+ if(value('email-dob')) {
+  const birth=new Date(window.emailDobISO||value('email-dob')), now=new Date();
+  const adult=new Date(now.getFullYear()-18,now.getMonth(),now.getDate());
+  if(isNaN(birth.getTime()))errors['email-dob']='Select a valid date';
+  else if(birth>adult)errors['email-dob']='You must be at least 18 years old';
+ }
+ ['email-country','email-dob','email-currency','email-address','email-password','email-repeat-password'].forEach(id=>setEmailRegistrationError(id,errors[id]));
+ let valid=Object.keys(errors).length===0;
+ ['ec1','ec2','ec4'].forEach(id=>{const field=document.getElementById(id);field.closest('.reg-check-row').classList.toggle('phone-check-invalid',!field.checked);if(!field.checked)valid=false;});
+ if(!valid)showPhoneValidationToast();return valid;
+}
+function submitEmailRegistration() {
+ if(window.emailRegistrationBusy||registrationGoalAction)return;
+ if(validateEmailRegistration())openRegistrationGoal(completeEmailRegistration);
+}
+function openRegistrationGoal(action) {
+ if(registrationGoalAction)return;
+ clearTimeout(registrationGoalTimer);registrationGoalAction=action;
+ registrationGoalShooting=false;registrationBallAngle=0;registrationBallPrevious=80;
+ const movingBall=document.getElementById('registration-goal-ball');
+ movingBall.getAnimations().forEach(animation=>animation.cancel());
+ movingBall.querySelector('svg').getAnimations().forEach(animation=>animation.cancel());
+ movingBall.querySelector('svg').style.transform='rotate(0deg)';
+ registrationGoalTarget=38.6;
+ document.getElementById('registration-goal-target').style.left=registrationGoalTarget+'%';
+ const slider=document.getElementById('registration-goal-slider');slider.disabled=false;slider.value=80;
+ document.getElementById('registration-goal-success').style.display='none';
+ document.getElementById('registration-goal-ball').style.visibility='visible';
+ document.getElementById('registration-goal-control').classList.remove('completed');
+ document.getElementById('registration-goal-status').textContent='';
+ document.getElementById('registration-goal-overlay').style.display='block';
+ moveRegistrationBall(slider.value);
+}
+function cancelRegistrationGoal() {
+ clearTimeout(registrationGoalTimer);registrationGoalAction=null;registrationGoalShooting=false;
+ document.getElementById('registration-goal-overlay').style.display='none';
+}
+function registrationBallTop(position) {
+ const distance=Math.min(1,Math.abs(Number(position)-registrationGoalTarget)/49.4);
+ return 63+12*Math.sin(distance*Math.PI/2);
+}
+function moveRegistrationBall(value) {
+ if(registrationGoalShooting)return;
+ const position=Number(value), ball=document.getElementById('registration-goal-ball');
+ registrationBallAngle+=(position-registrationBallPrevious)*12;
+ registrationBallPrevious=position;
+ ball.style.left=position+'%';
+ ball.style.top=registrationBallTop(position)+'%';
+ ball.querySelector('svg').style.transform='rotate('+registrationBallAngle+'deg)';
+}
+function checkRegistrationGoal() {
+ if(!registrationGoalAction||registrationGoalShooting)return;
+ const slider=document.getElementById('registration-goal-slider');
+ if(Math.abs(Number(slider.value)-registrationGoalTarget)>5){document.getElementById('registration-goal-status').textContent='Try again — move the ball into the circle.';return;}
+ registrationGoalShooting=true;slider.disabled=true;
+ const ball=document.getElementById('registration-goal-ball');
+ ball.style.left=registrationGoalTarget+'%';ball.style.top='63%';
+ // Goal reached: stop immediately, with no additional spinning shot.
+ ball.getAnimations().forEach(animation=>animation.cancel());
+ ball.querySelector('svg').getAnimations().forEach(animation=>animation.cancel());
+ registrationGoalTimer=setTimeout(()=>{
+  if(!registrationGoalAction)return;
+  document.getElementById('registration-goal-success').style.display='flex';
+  ball.style.visibility='hidden';
+  document.getElementById('registration-goal-control').classList.add('completed');
+  document.getElementById('registration-goal-status').textContent='Success';
+  registrationGoalTimer=setTimeout(async()=>{
+   const action=registrationGoalAction;registrationGoalAction=null;registrationGoalShooting=false;
+   document.getElementById('registration-goal-overlay').style.display='none';
+   if(action)await action();
+  },1600);
+ },0);
+}
+['email-address','email-password','email-repeat-password'].forEach(id=>document.getElementById(id).addEventListener('input',function(){setEmailRegistrationError(id,'');}));
+['ec1','ec2','ec4'].forEach(id=>document.getElementById(id).addEventListener('change',function(){if(this.checked)this.closest('.reg-check-row').classList.remove('phone-check-invalid');}));
+const requirements=document.querySelector('#email-registration-form .password-req-box');
+if(requirements){requirements.style.cursor='pointer';requirements.onclick=()=>{let detail=document.getElementById('email-password-requirements');if(!detail){detail=document.createElement('div');detail.id='email-password-requirements';detail.style.cssText='padding:12px;font-size:13px;color:#69999c;';detail.textContent='Use at least 8 characters. Repeat the same password in both fields.';requirements.after(detail);}else detail.hidden=!detail.hidden;};}
+</script>
+<style>
+#registration-goal-background {display:block;width:100%;height:100%;object-fit:fill;}
+#registration-goal-target {display:none;}
+#registration-goal-ball {top:74%;}
+#registration-goal-ball svg {will-change:transform;}
+#registration-goal-success {background:none;}
+#registration-goal-success img {width:100%;height:100%;object-fit:fill;}
+</style>
+<style>
+.goal-control input::-webkit-slider-thumb {background:#28699b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'%3E%3Cpath d='M19 11l-5 5 5 5m-5-5h9m6-5l5 5-5 5m-4-5h9' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/48px 32px no-repeat;}
+.goal-control input::-moz-range-thumb {background:#28699b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 32'%3E%3Cpath d='M19 11l-5 5 5 5m-5-5h9m6-5l5 5-5 5m-4-5h9' stroke='white' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/48px 32px no-repeat;}
+</style>
+
+<style>
+#email-checkbox-container .reg-check-row,#checkbox-container .reg-check-row {margin-bottom:0!important;padding:12px 0;min-height:28px;}
+#email-checkbox-container,#checkbox-container {display:flex;flex-direction:column;gap:10px;}
+.goal-back {display:flex;align-items:center;justify-content:center;width:40px;height:40px;padding:6px;}
+</style>
+<script>
+function clearCompletedRegistrationForms() {
+ ['email-registration-form','phone-registration-form'].forEach(id=>{
+  const form=document.getElementById(id);if(!form)return;
+  form.querySelectorAll('input').forEach(field=>{
+   if(field.type==='checkbox')field.checked=false;
+   else if(field.id==='selected-bonus-input'||field.id==='email-bonus-display')field.value='Reject bonuses';
+   else field.value='';
+   if(field.type==='text'&&(field.id==='email-password'||field.id==='email-repeat-password'))field.type='password';
+   field.removeAttribute('aria-invalid');
+  });
+  form.querySelectorAll('.email-field-invalid,.phone-field-invalid,.phone-check-invalid').forEach(el=>el.classList.remove('email-field-invalid','phone-field-invalid','phone-check-invalid'));
+  form.querySelectorAll('.email-field-error').forEach(el=>el.remove());
+  form.scrollTop=0;
+ });
+ const flag=document.getElementById('selected-flag');if(flag)flag.textContent='🌐';
+ const status=document.getElementById('email-registration-status');if(status)status.textContent='';
+ const error=document.getElementById('checkbox-error');if(error)error.style.display='none';
+ const requirements=document.getElementById('email-password-requirements');if(requirements)requirements.hidden=true;
+ window.emailDobISO='';window.pendingEmailProfile=null;
+ window.tempCountry='';window.tempPhone='';window.tempCurrency='';window.tempBonus='';
+ if(typeof closeEmailLocationPicker==='function')closeEmailLocationPicker();
+ if(typeof closeEmailCalendar==='function')closeEmailCalendar();
+}
+</script>
+
+<style>
+#country-popup-overlay .bonus-popup-sheet,#currency-popup-overlay .bonus-popup-sheet,#email-location-overlay .email-picker-sheet {
+ width:100%;max-width:600px;height:74dvh;max-height:85dvh;border-radius:20px 20px 0 0;padding:8px 16px 0;display:flex;flex-direction:column;box-sizing:border-box;
+}
+#email-calendar-overlay .email-picker-sheet {border-radius:20px 20px 0 0;padding:8px 16px 0;max-height:85dvh;min-height:390px;}
+.picker-drag-handle {display:flex;justify-content:center;align-items:center;height:18px;min-height:18px;touch-action:none;cursor:grab;}
+.picker-drag-handle::after {content:'';width:34px;height:4px;background:#d0e1e4;border-radius:4px;}
+#country-popup-overlay .bonus-sheet-handle,#currency-popup-overlay .bonus-sheet-handle {display:none;}
+#email-location-overlay .email-picker-sheet>div:nth-child(2),#email-calendar-overlay .email-picker-sheet>div:nth-child(2) {justify-content:center!important;padding:4px 0 16px;color:#174654;font-size:20px;}
+#email-location-overlay .email-picker-sheet>div:nth-child(2)>button,#email-calendar-overlay .email-picker-sheet>div:nth-child(2)>button {display:none;}
+#country-popup-overlay .bonus-sheet-title,#currency-popup-overlay .bonus-sheet-title {text-align:center;font-size:20px;color:#174654;margin:4px 0 16px;}
+#country-popup-overlay .country-search-box,#currency-popup-overlay .country-search-box,#email-location-search {background:#e7eff2!important;border:none!important;border-radius:30px!important;min-height:40px;margin:0 0 10px!important;padding:10px 12px!important;box-sizing:border-box;}
+#country-popup-overlay .country-scroll-list,#currency-popup-overlay .country-scroll-list,#email-location-list {flex:1;min-height:0;max-height:none;overflow-y:auto;}
+#email-location-list .email-picker-row {padding:16px 4px;align-items:center;font-size:16px;}
+.sheet-radio {width:17px;height:17px;border:2px solid #a3bec2;border-radius:50%;box-sizing:border-box;flex-shrink:0;}
+.email-picker-row.selected {color:#20ab4c;}
+.email-picker-row.selected .sheet-radio {border-color:#20ab4c;background:#20ab4c;box-shadow:inset 0 0 0 3px white;}
+.email-calendar-grid {gap:4px;flex:1;}
+.email-calendar-grid b {color:#69999c;font-size:12px;padding:10px 0;}
+.email-calendar-grid button {background:white;min-height:34px;}
+.email-calendar-grid button.selected {background:#0bb340;color:white;border-radius:12px;}
+.date-sheet-actions {display:flex;gap:8px;padding:12px 0;margin-top:12px;border-top:1px solid #e9f0f2;}
+.date-sheet-actions button {flex:1;border:0;border-radius:10px;padding:12px;background:#dbf3e3;color:#20a64b;font-size:16px;font-weight:bold;}
+.date-sheet-actions button:last-child {background:#0bb340;color:white;}
+</style>
+<script>
+function applyEmailCalendarDate() {
+ const date=window.emailPendingDob;if(!date)return;
+ const now=new Date(),limit=new Date(now.getFullYear()-18,now.getMonth(),now.getDate());
+ if(date>limit)return;
+ const mm=String(date.getMonth()+1).padStart(2,'0'),dd=String(date.getDate()).padStart(2,'0');
+ window.emailDobISO=date.getFullYear()+'-'+mm+'-'+dd;
+ document.getElementById('email-dob').value=mm+'/'+dd+'/'+date.getFullYear();
+ if(typeof setEmailRegistrationError==='function')setEmailRegistrationError('email-dob','');
+ closeEmailCalendar();
+}
+[
+ ['country-popup-overlay',closeCountryPopup],['currency-popup-overlay',closeCurrencyPopup],['bonus-popup-overlay',closeBonusPopup],
+ ['email-location-overlay',closeEmailLocationPicker],['email-calendar-overlay',closeEmailCalendar]
+].forEach(([id,close])=>{
+ const overlay=document.getElementById(id),sheet=overlay.firstElementChild;
+ const handle=document.createElement('div');handle.className='picker-drag-handle';handle.setAttribute('role','button');handle.tabIndex=0;handle.setAttribute('aria-label','Close selection');sheet.prepend(handle);
+ handle.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' ')close();});
+ let startY=0,distance=0,dragging=false;
+ handle.addEventListener('pointerdown',event=>{startY=event.clientY;distance=0;dragging=true;handle.setPointerCapture(event.pointerId);sheet.style.animation='none';sheet.style.transition='none';});
+ handle.addEventListener('pointermove',event=>{if(!dragging)return;distance=Math.max(0,event.clientY-startY);sheet.style.transform='translateY('+distance+'px)';});
+ const end=()=>{if(!dragging)return;dragging=false;sheet.style.transition='transform .2s ease';sheet.style.transform='';sheet.style.animation='';if(distance>65)close();};
+ handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',()=>{distance=0;end();});
+ overlay.addEventListener('click',event=>{if(event.target===overlay)close();});
+});
+</script>
+
+<style>
+#login-page .login-top-bar,#register-page .register-top-bar {background-size:cover!important;background-position:center!important;}
+#login-page .login-back-overlay,#register-page .register-back-overlay {
+ width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+ max-width:36px!important;max-height:36px!important;left:10px!important;top:10px!important;
+ background:#7e9497!important;border-radius:50%!important;display:flex;align-items:center;justify-content:center;
+ color:white;box-sizing:border-box;padding:6px;aspect-ratio:1;
+}
+</style>
+
+<style>
+#registration-leave-dialog,#registration-picker-loading {display:none;position:fixed;inset:0;z-index:18000;background:#0007;align-items:center;justify-content:center;}
+.registration-leave-card {width:270px;max-width:82vw;background:white;border-radius:14px;text-align:center;color:#244e5a;overflow:hidden;box-shadow:0 8px 30px #0002;}
+.registration-leave-card h3 {font-size:17px;color:#13af48;margin:18px 12px 12px;}
+.registration-leave-card p {font-size:14px;margin:0 18px 18px;line-height:1.4;}
+.registration-leave-card button {display:block;width:100%;border:0;border-top:1px solid #e7eef1;background:white;color:#13af48;font-size:15px;padding:13px;cursor:pointer;}
+.registration-picker-spinner {width:26px;height:26px;border:3px solid #ffffff30;border-top-color:white;border-radius:50%;animation:pickerWaitSpin .7s linear infinite;}
+@keyframes pickerWaitSpin {to{transform:rotate(360deg);}}
+</style>
+<div id="registration-leave-dialog" role="dialog" aria-modal="true" aria-labelledby="registration-leave-title">
+ <div class="registration-leave-card"><h3 id="registration-leave-title">Attention</h3><p>Are you sure you want to stop the registration process?</p><button type="button" onclick="acceptRegistrationBack()">OK</button><button type="button" onclick="cancelRegistrationBack()">Cancel</button></div>
+</div>
+<div id="registration-picker-loading" role="status" aria-label="Loading selection"><div class="registration-picker-spinner"></div></div>
+<script>
+['registration-leave-dialog','registration-picker-loading'].forEach(id=>document.getElementById('app-shell').appendChild(document.getElementById(id)));
+let pickerLoadingTimer;
+function cancelRegistrationBack(){document.getElementById('registration-leave-dialog').style.display='none';}
+function acceptRegistrationBack(){
+ cancelRegistrationBack();clearCompletedRegistrationForms();
+ ['email-registration-form','phone-registration-form'].forEach(id=>document.getElementById(id).style.display='none');
+ window.resetAppNavigation('register-page');
+}
+window.confirmRegistrationBack=function(){
+ const leave=document.getElementById('registration-leave-dialog');
+ if(leave.style.display==='flex'){cancelRegistrationBack();return true;}
+ const loading=document.getElementById('registration-picker-loading');
+ if(loading.style.display==='flex'){clearTimeout(pickerLoadingTimer);loading.style.display='none';return true;}
+ if(getComputedStyle(document.getElementById('registration-goal-overlay')).display!=='none')return false;
+ if(document.getElementById('successPopup').style.display==='flex')return false;
+ const opened=Array.from(document.querySelectorAll('.bonus-overlay')).some(el=>getComputedStyle(el).display!=='none');
+ if(opened)return false;
+ const form=['email-registration-form','phone-registration-form'].map(id=>document.getElementById(id)).find(el=>el.style.display!=='none');
+ if(!form)return false;
+ leave.style.display='flex';document.activeElement?.blur();return true;
+};
+['openCountryPopup','openCurrencyPopup','openEmailLocationPicker','openEmailCalendar','openBonusPopup'].forEach(name=>{
+ const original=window[name];
+ window[name]=function(...args){
+  clearTimeout(pickerLoadingTimer);
+  const wait=document.getElementById('registration-picker-loading');wait.style.display='flex';
+  document.activeElement?.blur();
+  pickerLoadingTimer=setTimeout(()=>{
+   wait.style.display='none';
+   original.apply(this,args);
+  },350);
+ };
+});
+</script>
+
+<script>
+let registrationPickerScroll = null;
+['openCountryPopup','openCurrencyPopup','openEmailLocationPicker','openEmailCalendar','openBonusPopup'].forEach(name=>{
+ const original=window[name];window[name]=function(...args){
+  const form=['email-registration-form','phone-registration-form'].map(id=>document.getElementById(id)).find(el=>el.style.display!=='none');
+  if(form&&!registrationPickerScroll)registrationPickerScroll={form,top:form.scrollTop,outer:window.scrollY};
+  return original.apply(this,args);
+ };
+});
+['closeCountryPopup','closeCurrencyPopup','closeEmailLocationPicker','closeEmailCalendar','closeBonusPopup'].forEach(name=>{
+ const original=window[name];window[name]=function(...args){
+  const result=original.apply(this,args),saved=registrationPickerScroll;
+  if(saved){registrationPickerScroll=null;requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(saved.form.style.display==='none')return;
+   saved.form.scrollTop=saved.top;window.scrollTo(0,saved.outer);
+  }));}
+  return result;
+ };
+});
+</script>
+
+<style>
+#phone-registration-form,#phone-registration-form * {
+ -webkit-tap-highlight-color:transparent!important;
+}
+#phone-registration-form .country-code-box,#phone-registration-form .reg-input-section,
+#phone-registration-form .reg-select-line {user-select:none;-webkit-user-select:none;}
+#phone-registration-form input:not([readonly]) {user-select:text;-webkit-user-select:text;}
+#phone-registration-form .country-code-box:active,#phone-registration-form .reg-input-section:active,
+#phone-registration-form .reg-select-line:active {background:transparent!important;box-shadow:none!important;}
+.country-flag-icon,#selected-flag {
+ display:inline-flex!important;position:relative;width:22px!important;height:22px!important;
+ min-width:22px;overflow:hidden;border-radius:50%;align-items:center;justify-content:center;
+ box-shadow:0 1px 3px #183b4a66;background:#e7eff3;flex-shrink:0;line-height:22px;
+}
+.registration-round-flag {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.registration-flag-fallback {font-size:25px;line-height:22px;}
+.country-flag-icon::after,#selected-flag::after {content:'';position:absolute;inset:0;border-radius:50%;background:linear-gradient(#ffffff65,transparent 48%,#00000020);box-shadow:inset 0 0 0 1px #536b7840;pointer-events:none;}
+#bonus-popup-overlay .bonus-popup-sheet {border-radius:20px 20px 0 0;padding-top:8px;}
+#bonus-popup-overlay .bonus-sheet-handle {display:none;}
+#bonus-popup-overlay .bonus-sheet-title {font-size:20px;text-align:center;color:#174654;}
+</style>
+<script>
+function registrationFlagMarkup(flag) {
+ const letters=Array.from(flag||'').map(character=>character.codePointAt(0)-127397);
+ const iso=letters.length===2&&letters.every(code=>code>=65&&code<=90)?String.fromCharCode(...letters).toLowerCase():'';
+ return '<span class="registration-flag-fallback">'+(flag||'🌐')+'</span>'+(iso?'<img class="registration-round-flag" src="https://flagcdn.com/w40/'+iso+'.png" alt="" onerror="this.style.display=\'none\'">':'');
+}
+const initialPhoneFlag=document.getElementById('selected-flag');
+if(initialPhoneFlag)initialPhoneFlag.innerHTML=registrationFlagMarkup(initialPhoneFlag.textContent.trim());
+</script>
+
+<style>
+#cat-top .menu-art.asset-esports,#cat-sports .menu-art.asset-esports{position:absolute;right:0;bottom:0;width:92px;height:60px;object-fit:contain;object-position:right bottom;}
+.mc-nav .active .asset-casino-icon{width:44px;height:44px;margin-top:-20px;border-radius:50%;object-fit:contain;}
+.mc-nav .asset-casino-icon{width:24px;height:24px;object-fit:contain;}
+</style>
+<script>
+(function(){
+ const base='https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/';
+ function asset(file,alt){const img=new Image();img.alt=alt;img.onerror=()=>{if(!img.dataset.localRetry){img.dataset.localRetry='1';img.src=file;}};img.src=base+file;return img;}
+ ['cat-top','cat-sports'].forEach(id=>{const card=[...document.querySelectorAll('#'+id+'>div')].find(el=>el.textContent.includes('The best esports events'));if(!card)return;const old=card.querySelector('.menu-art');const img=asset('esports.jpg','Esports');img.className='menu-art asset-esports';if(old)old.replaceWith(img);else card.append(img);});
+ const button=document.querySelector('.mc-nav button[onclick="mcShowTab(\'home\')"]');if(button){const old=button.querySelector('i');const img=asset('my-casino-icon.png','');img.className='asset-casino-icon';if(old)old.replaceWith(img);}
+})();
+</script>
+
 </body>
 </html>
+<style>
+#phone-registration-form .phone-reg-header-new{height:58px;min-height:58px;}
+#phone-registration-form .phone-reg-title-area h3{font-size:20px;line-height:24px;}
+#phone-registration-form .phone-reg-title-area p{font-size:12px;line-height:16px;margin:2px 0 0;}
+#phone-registration-form .phone-reg-back{left:16px;}
+</style>
+<style>
+#complete-profile-page .cp-group{margin-bottom:26px;}
+#complete-profile-page .cp-input{box-sizing:border-box;padding:22px 0 6px;height:48px;font-size:16px;color:#204b55;border-bottom:1px solid #bdcdd0;}
+#complete-profile-page .cp-label{left:0;top:20px;font-size:16px;color:#789b9f;font-weight:400;}
+#complete-profile-page .cp-group.has-value .cp-label{top:0;font-size:12px;color:#789b9f;font-weight:400;}
+#complete-profile-page .cp-group.has-value .cp-input{border-bottom:1px solid #bdcdd0;}
+#complete-profile-page .cp-group:focus-within .cp-label{top:0;font-size:12px;color:#24a354;}
+#complete-profile-page .cp-group:focus-within .cp-input{border-bottom:2px solid #24a354;}
+.cp-section-title{color:#73999f;font-size:14px;font-weight:600;padding:10px 16px 0;}
+#complete-profile-page [id^="card-"]{padding:24px 20px!important;border-radius:18px!important;}
+#profile-save-btn{background:#0aaf40!important;color:white!important;}
+#profile-save-btn:disabled{background:#e0eaec!important;color:#a9c3c7!important;}
+#cp-popup-modal .cp-modal-content{box-sizing:border-box;padding:8px 16px 0;max-height:76dvh;display:flex;flex-direction:column;}
+#cp-modal-title{font-size:20px!important;color:#174652!important;margin:8px 0 24px!important;}
+#cp-modal-list{max-height:none!important;min-height:0;overflow:auto;}
+#cp-modal-search{font-size:16px!important;background:#e5eff2!important;padding:13px 38px!important;}
+.cp-modal-item{min-height:50px;box-sizing:border-box;font-size:16px!important;color:#214d57!important;border-bottom:1px solid #e1eaec!important;padding:16px 4px!important;}
+.cp-radio{width:18px;height:18px;border:2px solid #aac3c6;border-radius:50%;flex-shrink:0;box-sizing:border-box;}
+.cp-modal-item.selected{color:#23a34b!important;}.selected .cp-radio{border-color:#23a34b;box-shadow:inset 0 0 0 3px white;background:#23a34b;}
+.cp-drag{width:36px;height:4px;background:#d1e1e4;border-radius:3px;margin:0 auto 10px;touch-action:none;cursor:grab;padding:0;border:10px solid white;box-sizing:content-box;background-clip:padding-box;}
+#cp-datepicker-modal{align-items:center;}
+#cp-datepicker-modal .cp-modal-content{border-radius:0;padding:0;width:82%;max-width:340px;max-height:85dvh;box-sizing:border-box;}
+.cp-date-head{background:#0aaf40;color:white;padding:18px 24px;text-align:left;font-size:28px;}
+.cp-date-tools{display:flex;gap:8px;padding:16px;align-items:center;}.cp-date-tools select{min-width:0;flex:1;border:0;color:#174652;font-size:15px;background:white;}
+.cp-date-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0 16px 20px;gap:4px;}.cp-date-grid button{border:0;background:white;color:#315960;border-radius:50%;height:34px;}.cp-date-grid button:disabled{color:#c3d2d4;}.cp-date-grid .chosen{background:#0aaf40;color:white;}.cp-date-actions{display:flex;justify-content:flex-end;gap:26px;padding:16px 24px;}.cp-date-actions button{border:0;background:white;color:#22a44b;font-size:15px;}
+</style>
+<script>
+allProfileFields.splice(allProfileFields.indexOf('username'),1);
+allProfileFields.push('surname');
+let cpBaseline={},cpItems=[],cpType='',cpRequest=0,cpDate;
+(function(){
+ const page=document.getElementById('complete-profile-page');
+ ['card-main-details','card-residence','card-id-document'].forEach(id=>{const card=document.getElementById(id),heading=card.firstElementChild;heading.className='cp-section-title';heading.removeAttribute('style');card.before(heading);heading.dataset.card=id;});
+ const email=document.getElementById('disp-email');email.style.cursor='pointer';email.onclick=()=>showCompleteProfile();
+ const sheet=document.querySelector('#cp-popup-modal .cp-modal-content');const handle=document.createElement('div');handle.className='cp-drag';sheet.prepend(handle);let y=null;
+ handle.addEventListener('pointerdown',e=>{y=e.clientY;handle.setPointerCapture(e.pointerId);});
+ handle.addEventListener('pointermove',e=>{if(y!==null)sheet.style.transform=`translateY(${Math.max(0,e.clientY-y)}px)`;});
+ const finish=e=>{if(y!==null&&e.clientY-y>60){document.getElementById('cp-popup-modal').style.display='none';cpRequest++;}sheet.style.transform='';y=null;};handle.addEventListener('pointerup',finish);handle.addEventListener('pointercancel',()=>{sheet.style.transform='';y=null;});
+})();
+function showCompleteProfile(){
+ const p=JSON.parse(localStorage.getItem('user_profile')||'{}');cpBaseline={};
+ allProfileFields.forEach(f=>{const el=document.getElementById('form-'+f),group=document.getElementById('group-'+f);if(!el||!group)return;const val=String(p[f==='country'?'region':f]||'').trim();el.value=val;cpBaseline[f]=val;group.classList.toggle('locked',!!val);group.classList.toggle('has-value',!!val);});
+ document.querySelectorAll('#complete-profile-page [id^="card-"]').forEach(card=>{const empty=[...card.querySelectorAll('.cp-group')].every(g=>g.classList.contains('locked'));card.style.display=empty?'none':'block';document.querySelector(`[data-card="${card.id}"]`).style.display=empty?'none':'block';});
+ switchPage('complete-profile-page');document.getElementById('complete-profile-page').scrollTop=0;checkFormChanges();
+}
+function checkFormChanges(){let changed=false;allProfileFields.forEach(f=>{const input=document.getElementById('form-'+f),group=document.getElementById('group-'+f);if(!input||!group)return;const value=input.value.trim();group.classList.toggle('has-value',!!value);if(!group.classList.contains('locked')&&value!==(cpBaseline[f]||''))changed=true;});const b=document.getElementById('profile-save-btn');b.disabled=!changed;b.style.cursor=changed?'pointer':'not-allowed';}
+async function openPopup(type){
+ cpType=type;const request=++cpRequest,modal=document.getElementById('cp-popup-modal');document.getElementById('cp-modal-title').textContent=type==='country'?'Select region':type==='city'?'Select city':'Select document type';
+ const list=document.getElementById('cp-modal-list');list.innerHTML='';if(type!=='doc-type'){const search=document.createElement('input');search.id='cp-modal-search';search.type='search';search.placeholder=type==='country'?'Region':'City';search.oninput=()=>filterModalList(type);const box=document.createElement('div');box.className='cp-search-wrap';const icon=document.createElement('i');icon.className='fa-solid fa-magnifying-glass';box.append(icon,search);list.append(box);}const container=document.createElement('div');container.id='cp-modal-items-container';list.append(container);modal.style.display='flex';
+ const p=JSON.parse(localStorage.getItem('user_profile')||'{}'),country=p.country||'',region=document.getElementById('form-country').value;
+ if(type==='doc-type')cpItems=["Foreign national's passport (ID card)",'Residence permit','Other documents','ID document','National ID card','ID for foreign nationals','Passport','Driving license','Birth certificate'];
+ else {const mode=type==='country'?'region':'city';cpItems=emailLocationFallback(country,region,mode);if(!cpItems.length){container.textContent='Loading…';try{cpItems=await fetchEmailGeography(country,mode==='city'?region:'',mode);}catch(e){cpItems=[];}}}
+ if(request!==cpRequest)return;renderModalItems(cpItems,type,container);
+}
+function renderModalItems(items,type,container){container.replaceChildren();const current=document.getElementById('form-'+type)?.value;items.forEach(item=>{const row=document.createElement('div');row.className='cp-modal-item'+(current===item?' selected':'');const text=document.createElement('span');text.textContent=item;const radio=document.createElement('span');radio.className='cp-radio';row.append(text,radio);row.onclick=()=>{document.getElementById('form-'+type).value=item;if(type==='country'&&!document.getElementById('group-city').classList.contains('locked'))document.getElementById('form-city').value='';document.getElementById('cp-popup-modal').style.display='none';checkFormChanges();};container.append(row);});if(!items.length)container.textContent='No locations available for this selection.';}
+function filterModalList(type){const q=document.getElementById('cp-modal-search').value.toLowerCase();renderModalItems(cpItems.filter(x=>x.toLowerCase().includes(q)),type,document.getElementById('cp-modal-items-container'));}
+function openDatePicker(target){activeDateTarget=target;const value=document.getElementById('form-'+target).value;const parts=value.split(/[/.]/);cpDate=parts.length===3?new Date(+parts[2],+parts[1]-1,+parts[0]):new Date();if(isNaN(cpDate))cpDate=new Date();const sheet=document.querySelector('#cp-datepicker-modal .cp-modal-content');sheet.innerHTML='<div class="cp-date-head" id="cp-date-head"></div><div class="cp-date-tools"><button onclick="cpChangeMonth(-1)">‹</button><select id="cp-date-month" onchange="cpChangeDateView()"></select><select id="cp-date-year" onchange="cpChangeDateView()"></select><button onclick="cpChangeMonth(1)">›</button></div><div class="cp-date-grid" id="cp-date-grid"></div><div class="cp-date-actions"><button onclick="document.getElementById(\'cp-datepicker-modal\').style.display=\'none\'">CANCEL</button><button onclick="confirmDate()">OK</button></div>';
+ const months=document.getElementById('cp-date-month'),years=document.getElementById('cp-date-year');for(let m=0;m<12;m++){const o=new Option(new Date(2000,m,1).toLocaleString('en',{month:'long'}),m);months.add(o);}for(let y=new Date().getFullYear();y>=new Date().getFullYear()-120;y--)years.add(new Option(y,y));document.getElementById('cp-datepicker-modal').style.display='flex';cpRenderDate();}
+function cpRenderDate(){document.getElementById('cp-date-month').value=cpDate.getMonth();document.getElementById('cp-date-year').value=cpDate.getFullYear();document.getElementById('cp-date-head').textContent=cpDate.toLocaleDateString('en',{year:'numeric',weekday:'short',day:'numeric',month:'short'});const grid=document.getElementById('cp-date-grid');grid.replaceChildren();'MTWTFSS'.split('').forEach(x=>{const e=document.createElement('span');e.textContent=x;grid.append(e);});const offset=(new Date(cpDate.getFullYear(),cpDate.getMonth(),1).getDay()+6)%7;for(let i=0;i<offset;i++)grid.append(document.createElement('span'));const max=new Date(cpDate.getFullYear(),cpDate.getMonth()+1,0).getDate();for(let d=1;d<=max;d++){const b=document.createElement('button');b.textContent=d;const date=new Date(cpDate.getFullYear(),cpDate.getMonth(),d);b.disabled=date>new Date();b.className=d===cpDate.getDate()?'chosen':'';b.onclick=()=>{cpDate=date;cpRenderDate();};grid.append(b);}}
+function cpChangeDateView(){cpDate=new Date(+document.getElementById('cp-date-year').value,+document.getElementById('cp-date-month').value,1);cpRenderDate();}
+function cpChangeMonth(delta){cpDate=new Date(cpDate.getFullYear(),cpDate.getMonth()+delta,1);cpRenderDate();}
+function confirmDate(){document.getElementById('form-'+activeDateTarget).value=[String(cpDate.getDate()).padStart(2,'0'),String(cpDate.getMonth()+1).padStart(2,'0'),cpDate.getFullYear()].join('.');document.getElementById('cp-datepicker-modal').style.display='none';checkFormChanges();}
+</script>
+<style>
+#cp-popup-modal .cp-modal-content{height:66dvh;max-height:78dvh;padding:0 16px;overflow:hidden;}
+#cp-popup-modal:has(#cp-modal-search) .cp-modal-content{height:66dvh;}
+#cp-modal-list{display:flex;flex-direction:column;overflow:hidden!important;flex:1;}
+#cp-modal-items-container{overflow-y:auto;flex:1;min-height:0;}
+.cp-search-wrap{position:relative;margin:0 14px 16px;flex-shrink:0;}
+.cp-search-wrap i{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px;color:#6c999f;pointer-events:none;}
+#cp-modal-search{display:block;width:100%;box-sizing:border-box;border:0!important;outline:0!important;border-radius:28px!important;box-shadow:none!important;height:42px;padding:0 14px 0 38px!important;color:#244e59;appearance:none;-webkit-appearance:none;}
+#cp-modal-search::placeholder{color:#729b9f;opacity:1;}
+#cp-modal-title{margin:3px 0 26px!important;}
+#cp-datepicker-modal .cp-modal-content{width:75%;max-width:340px;height:450px;max-height:84dvh;display:flex;flex-direction:column;overflow:hidden;}
+.cp-date-head{padding:16px 24px 18px;flex-shrink:0;}
+.cp-date-head button{display:block;background:none;border:0;color:#b8ecc9;padding:0;font-size:16px;margin-bottom:4px;cursor:pointer;}
+.cp-date-head strong{display:block;font-size:32px;font-weight:500;line-height:1.2;}
+.cp-calendar-body{flex:1;min-height:0;overflow:hidden;position:relative;}
+.cp-month-bar{height:58px;position:relative;display:flex;align-items:center;justify-content:center;color:#1c4a55;font-size:14px;font-weight:600;}
+.cp-month-bar button{position:absolute;left:24px;top:16px;border:0;background:none;width:26px;height:26px;padding:0;color:#275863;font-size:26px;line-height:22px;}
+.cp-date-grid{padding:8px 24px 0;gap:3px;grid-auto-rows:36px;align-items:center;font-size:12px;}
+.cp-date-grid>span{color:#739a9e;}
+.cp-date-grid button{height:34px;width:34px;max-width:100%;aspect-ratio:1;justify-self:center;display:flex;justify-content:center;align-items:center;padding:0;font-size:12px;border-radius:50%;}
+.cp-date-actions{flex-shrink:0;height:46px;box-sizing:border-box;align-items:center;padding:0 24px;}
+.cp-year-list{height:100%;overflow-y:auto;scrollbar-width:none;}
+.cp-year-list button{display:block;width:100%;height:48px;background:white;border:0;color:#24515c;font-size:16px;}
+.cp-year-list .selected{color:#1fa349;font-size:24px;font-weight:700;}
+@media(max-height:600px){#cp-datepicker-modal .cp-modal-content{height:84dvh;}.cp-date-grid{grid-auto-rows:30px;}.cp-date-grid button{width:28px;height:28px;}.cp-month-bar{height:42px;}.cp-date-head strong{font-size:26px;}}
+</style>
+<script>
+let cpYearMode=false;
+function cpLimitDate(){const limit=new Date();limit.setHours(0,0,0,0);if(activeDateTarget==='dob')limit.setFullYear(limit.getFullYear()-18);return limit;}
+function openDatePicker(target){
+ activeDateTarget=target;cpYearMode=false;
+ const value=document.getElementById('form-'+target).value,parts=value.split(/[/.]/);
+ cpDate=parts.length===3?new Date(+parts[2],+parts[1]-1,+parts[0]):cpLimitDate();if(isNaN(cpDate)||cpDate>cpLimitDate())cpDate=cpLimitDate();
+ document.querySelector('#cp-datepicker-modal .cp-modal-content').innerHTML='<div class="cp-date-head"><button id="cp-year-toggle" onclick="cpToggleYears()"></button><strong id="cp-selected-date"></strong></div><div class="cp-calendar-body" id="cp-calendar-body"></div><div class="cp-date-actions"><button onclick="document.getElementById(\'cp-datepicker-modal\').style.display=\'none\'">CANCEL</button><button onclick="confirmDate()">OK</button></div>';
+ document.getElementById('cp-datepicker-modal').style.display='flex';cpRenderDate();
+}
+function cpRenderDate(){
+ document.getElementById('cp-year-toggle').textContent=cpDate.getFullYear();
+ document.getElementById('cp-selected-date').textContent=cpDate.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+ const body=document.getElementById('cp-calendar-body');body.replaceChildren();
+ if(cpYearMode){const list=document.createElement('div');list.className='cp-year-list';let selected;for(let y=cpLimitDate().getFullYear()-120;y<=cpLimitDate().getFullYear();y++){const b=document.createElement('button');b.textContent=y;if(y===cpDate.getFullYear()){b.className='selected';selected=b;}b.onclick=()=>{const m=cpDate.getMonth(),day=Math.min(cpDate.getDate(),new Date(y,m+1,0).getDate());cpDate=new Date(y,m,day);if(cpDate>cpLimitDate())cpDate=cpLimitDate();cpYearMode=false;cpRenderDate();};list.append(b);}body.append(list);requestAnimationFrame(()=>{if(selected)list.scrollTop=selected.offsetTop-list.offsetTop-list.clientHeight/2+24;});return;}
+ const bar=document.createElement('div');bar.className='cp-month-bar';const arrow=document.createElement('button');arrow.textContent='‹';arrow.setAttribute('aria-label','Previous month');arrow.onclick=()=>cpChangeMonth(-1);const title=document.createElement('span');title.textContent=cpDate.toLocaleDateString('en-GB',{month:'long',year:'numeric'});bar.append(arrow,title);body.append(bar);
+ const grid=document.createElement('div');grid.className='cp-date-grid';grid.id='cp-date-grid';body.append(grid);'MTWTFSS'.split('').forEach(x=>{const e=document.createElement('span');e.textContent=x;grid.append(e);});const offset=(new Date(cpDate.getFullYear(),cpDate.getMonth(),1).getDay()+6)%7;for(let i=0;i<offset;i++)grid.append(document.createElement('span'));const max=new Date(cpDate.getFullYear(),cpDate.getMonth()+1,0).getDate();for(let d=1;d<=max;d++){const b=document.createElement('button');b.textContent=d;const date=new Date(cpDate.getFullYear(),cpDate.getMonth(),d);b.disabled=date>cpLimitDate();b.className=d===cpDate.getDate()?'chosen':'';b.onclick=()=>{cpDate=date;cpRenderDate();};grid.append(b);}
+}
+function cpToggleYears(){cpYearMode=!cpYearMode;cpRenderDate();}
+function cpChangeMonth(delta){const old=document.getElementById('cp-date-grid');cpDate=new Date(cpDate.getFullYear(),cpDate.getMonth()+delta,1);cpYearMode=false;const outgoing=old?.cloneNode(true);cpRenderDate();const incoming=document.getElementById('cp-date-grid');incoming?.animate([{transform:'translateX(-100%)',opacity:0},{transform:'translateX(0)',opacity:1}],{duration:240,easing:'ease-out'});if(outgoing){outgoing.removeAttribute('id');outgoing.style.cssText='position:absolute;left:0;right:0;top:58px;pointer-events:none;';document.getElementById('cp-calendar-body').append(outgoing);const a=outgoing.animate([{transform:'translateX(0)',opacity:1},{transform:'translateX(100%)',opacity:0}],{duration:240,easing:'ease-out'});a.onfinish=()=>outgoing.remove();}}
+</script>
+<style>
+#custom-attention-popup>div{width:68%!important;max-width:300px!important;border-radius:20px!important;padding:0!important;overflow:hidden;box-shadow:none!important;}
+#custom-attention-popup>div>div:first-child{color:#22a548!important;font-size:20px!important;padding:18px 16px 0!important;margin-bottom:12px!important;}
+#custom-attention-popup>div>div:nth-child(2){color:#536970!important;font-size:16px!important;padding:0 14px 17px!important;margin-bottom:0!important;}
+#custom-attention-popup>div>button{display:block;border-top:1px solid #d8e4e7!important;color:#22a548!important;font-size:16px!important;padding:14px 0!important;}
+</style>
+<style>
+#cat-top{padding:8px 11px 14px!important;gap:8px!important;background:#edf3f7;}
+#cat-top>div:first-child:has(img[alt="Grand Slam Men and Women"]){display:none;}
+#cat-top>.menu-reference-card{min-height:60px;box-sizing:border-box;padding:11px!important;border-radius:16px!important;gap:11px!important;position:relative;overflow:hidden;box-shadow:none;}
+#cat-top>.menu-reference-card>div:first-child{width:38px!important;height:38px!important;min-width:38px;background:#edf3f7!important;color:#0bac43!important;font-size:21px!important;}
+#cat-top>.menu-reference-card>div:nth-child(2)>div:first-child{font-size:14px!important;color:#154550!important;line-height:20px;font-weight:600!important;}
+#cat-top>.menu-reference-card>div:nth-child(2)>div:nth-child(2){font-size:12px!important;color:#749a9f!important;line-height:17px;}
+#cat-top>.menu-promo-card{background:linear-gradient(100deg,#5cccd3,#32b8c4)!important;color:white;}
+#cat-top>.menu-promo-card>div:first-child{background:#ffffff35!important;color:white!important;}
+#cat-top>.menu-promo-card>div:nth-child(2){font-size:14px!important;color:white!important;font-weight:600!important;}
+.menu-art{position:absolute;right:0;bottom:0;width:86px;height:60px;pointer-events:none;}
+</style>
+<script>
+(function(){
+const rows=[...document.querySelectorAll('#cat-top>.menu-reference-card')];
+const esports=rows.find(r=>r.textContent.includes('Esports'));if(esports){esports.insertAdjacentHTML('beforeend','<svg class="menu-art" viewBox="0 0 100 70" aria-hidden="true"><path fill="#87d8f3" d="M0 70 100 38v32z"/><path fill="#087fc4" d="m30 70 70-24v24z"/><g stroke="#26394b" stroke-width="2"><path fill="#c37939" d="m30 30 18-8 15 21-6 27H20z"/><path fill="#475865" d="m58 29 16-8 15 21 8 28H49z"/><path fill="#bcb2a0" d="m25 13 8-9 16 5 3 11-13 9-13-7z"/><path fill="#394959" d="m65 11 8-8 13 5 3 12-10 10-13-7z"/><path fill="#d4a076" d="m33 18 13 1-5 9-7-3z"/><path fill="#c39372" d="m73 18 13 1-5 9-7-2z"/><path fill="#202d38" d="m29 41 44-6 3 7-45 9z"/><path fill="#172831" d="m54 43 39-7 3 7-42 7z"/></g></svg>');}
+const promo=rows.find(r=>r.classList.contains('menu-promo-card'));if(promo)promo.insertAdjacentHTML('beforeend','<svg class="menu-art" viewBox="0 0 100 70" aria-hidden="true"><g fill="none" stroke="#8be1e7" stroke-width="1"><path d="m8 28 2 4 5 1-4 3 1 5-4-3-4 2 1-5-4-3 5-1z"/><path d="m86 3 2 4 5 1-4 3 1 5-4-3-4 2 1-5-4-3 5-1z"/></g><path fill="#098fb2" d="m30 25 57-7-10 39-38 4z"/><path fill="#21b4cf" d="m18 22 52-13 29 14-53 18z"/><path fill="#097a9c" d="m27 23 44-9 17 10-40 12z"/><path fill="#3ac9db" d="m24 27 8 1 12 28-7 1z"/><g stroke="#32c8de" stroke-width="3"><path d="m50 34 2 18m10-21-1 20m12-23-4 20m13-22-6 21"/></g><circle cx="46" cy="64" r="4" fill="#176383"/><circle cx="74" cy="59" r="4" fill="#176383"/></svg>');
+})();
+</script>
+<style>
+#cat-sports{padding:8px 11px 20px!important;gap:8px!important;background:#edf3f7;}
+#cat-sports>.sports-reference-card{min-height:60px;box-sizing:border-box;padding:11px!important;border-radius:16px!important;gap:11px!important;position:relative;overflow:hidden;box-shadow:none;}
+#cat-sports>.sports-reference-card>div:first-child{width:38px!important;height:38px!important;min-width:38px;background:#edf3f7!important;color:#0bac43!important;font-size:21px!important;}
+#cat-sports>.sports-reference-card>div:nth-child(2)>div:first-child{font-size:14px!important;color:#154550!important;line-height:20px;font-weight:600!important;}
+#cat-sports>.sports-reference-card>div:nth-child(2)>div:nth-child(2){font-size:12px!important;color:#749a9f!important;line-height:17px;}
+#cat-sports>.sports-reference-card:has(.menu-art)>div:nth-child(2){padding-right:62px;}
+</style>
+<script>
+(function(){
+const esports=[...document.querySelectorAll('#cat-sports>.sports-reference-card')].find(r=>r.textContent.includes('Esports'));
+const art=document.querySelector('#cat-top .menu-art');if(esports&&art)esports.append(art.cloneNode(true));
+const acc=document.querySelector('#cat-sports .fa-toggle-on');if(acc){acc.outerHTML='<svg width="23" height="25" viewBox="0 0 28 30" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="24" height="11" rx="4"/><rect x="2" y="17" width="24" height="11" rx="4"/><circle cx="8" cy="7.5" r="3" fill="white"/><circle cx="8" cy="22.5" r="3" fill="white"/><path d="M15 6h7M15 9h5" stroke="white" stroke-width="1.5"/></svg>';}
+})();
+</script>
+<style>
+#cat-casino{padding:8px 11px 20px!important;gap:8px!important;background:#edf3f7;}
+#cat-casino>.casino-reference-card{min-height:60px;box-sizing:border-box;padding:11px!important;border-radius:16px!important;gap:11px!important;position:relative;overflow:hidden;box-shadow:none!important;}
+#cat-casino>.casino-reference-card>div:first-child{width:38px!important;height:38px!important;min-width:38px;background:#edf3f7!important;color:#0bac43!important;font-size:21px!important;}
+#cat-casino>.casino-reference-card>div:nth-child(2){min-width:0;}
+#cat-casino>.casino-reference-card>div:nth-child(2)>div:first-child{font-size:14px!important;color:#154550!important;line-height:20px;font-weight:600!important;}
+#cat-casino>.casino-reference-card>div:nth-child(2)>div:nth-child(2){font-size:12px!important;color:#749a9f!important;line-height:17px;}
+</style>
+<script>
+(function(){
+const rows=[...document.querySelectorAll('#cat-casino>.casino-reference-card')];
+const art={
+'My casino':'<svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><rect x="3" y="5" width="17" height="24" rx="3" transform="rotate(-5 3 5)"/><rect x="10" y="4" width="18" height="24" rx="3" transform="rotate(15 10 4)" stroke="#edf3f7" stroke-width="2"/><path fill="white" d="M16 12c-5-5-9 3 1 9 10-8 4-13-1-9z"/></svg>',
+'Categories':'<svg viewBox="0 0 30 30" width="24" height="24" fill="currentColor"><rect x="2" y="2" width="11" height="11" rx="4"/><rect x="17" y="2" width="11" height="11" rx="4"/><rect x="2" y="17" width="11" height="11" rx="4"/><rect x="17" y="17" width="11" height="11" rx="4"/></svg>',
+'TVBet':'<svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="m10 2 6 6 6-6 2 2-6 6H8l-2-6z"/><rect x="2" y="9" width="25" height="20" rx="5"/><path d="M13 21c0-7 17-8 18 2l1 7c-1 3-5 0-8-2h-4c-5 5-8 4-7-7z" stroke="#edf3f7" stroke-width="2"/><path d="M19 20v7m-3-3h6" stroke="white" stroke-width="2"/><circle cx="27" cy="22" r="1.4" fill="white"/></svg>',
+'Providers':'<svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><rect x="2" y="2" width="24" height="18" rx="5"/><rect x="5" y="8" width="24" height="18" rx="5" stroke="#edf3f7" stroke-width="2"/><rect x="8" y="14" width="24" height="18" rx="5" stroke="#edf3f7" stroke-width="2"/></svg>'};
+rows.forEach(row=>{const name=row.children[1]?.children[0]?.textContent.trim();if(art[name])row.children[0].innerHTML=art[name];});
+})();
+</script>
+<style>
+#cat-22games{padding:8px 11px 20px!important;gap:8px!important;background:#edf3f7;}
+#cat-22games>.games-reference-card{min-height:60px;box-sizing:border-box;padding:11px!important;border-radius:16px!important;gap:11px!important;overflow:hidden;box-shadow:none!important;}
+#cat-22games>.games-reference-card:not(:first-child)>div:first-child,#cat-22games .games-summary>div:first-child{width:38px!important;height:38px!important;min-width:38px;background:#edf3f7!important;color:#0bac43!important;font-size:21px!important;}
+#cat-22games>.games-reference-card:not(:first-child)>div:nth-child(2)>div:first-child,#cat-22games .games-summary>div:nth-child(2)>div:first-child{font-size:14px!important;color:#154550!important;line-height:20px;font-weight:600!important;}
+#cat-22games>.games-reference-card:not(:first-child)>div:nth-child(2)>div:nth-child(2),#cat-22games .games-summary>div:nth-child(2)>div:nth-child(2){font-size:12px!important;color:#749a9f!important;line-height:17px;}
+#cat-22games>.games-reference-card:first-child{display:block!important;padding:11px 0 14px!important;}
+.games-heading{display:flex;align-items:center;justify-content:space-between;padding:0 11px;margin-bottom:12px;}
+.games-summary{display:flex;align-items:center;gap:11px!important;}
+.games-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 8px;scrollbar-width:none;touch-action:pan-x;}
+.games-scroll::-webkit-scrollbar{display:none;}
+.games-tile{flex:0 0 90px;width:90px;text-align:center;color:#174954;font-size:12px;font-weight:600;}
+.games-tile-art{height:90px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,#127fdd,#211070 65%,#940b86);color:white;overflow:hidden;font-weight:900;font-size:18px;line-height:1.15;box-sizing:border-box;}
+.games-tile:nth-child(2) .games-tile-art{background:radial-gradient(circle,#bdfcff,#123b69 60%,#080929);font-size:36px;color:#ffd36a;}
+.games-tile:nth-child(3) .games-tile-art{background:radial-gradient(circle at 30% 30%,#792251,#2f0a20);color:#ffca39;}
+.games-tile:nth-child(4) .games-tile-art{background:radial-gradient(circle,#dfb843,#732323);color:#ffdf62;}
+.games-tile-label{margin-top:10px;white-space:nowrap;}
+.games-tile-art img{width:100%;height:100%;object-fit:cover;}
+</style>
+<script>
+(function(){
+const card=document.querySelector('#cat-22games>.games-reference-card');const summary=card.firstElementChild;summary.classList.add('games-summary');const all=summary.nextElementSibling;const heading=document.createElement('div');heading.className='games-heading';card.prepend(heading);heading.append(summary,all);all.style.color='#20a747';all.style.fontSize='15px';
+const games=[['Crash Point','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/game-crash-point.png','CRASH<br>POINT'],['21','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/game-21.png','21'],['Crash','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/game-crash.png','CRASH'],['Royal Crystal','https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/game-royal-crystal.png','ROYAL<br>CRYSTAL']];const strip=document.createElement('div');strip.className='games-scroll';games.forEach(([name,file,art])=>{const tile=document.createElement('div');tile.className='games-tile';const image=document.createElement('div');image.className='games-tile-art';image.innerHTML=art;const img=document.createElement('img');img.alt=name;img.onload=()=>image.replaceChildren(img);img.onerror=()=>{if(!img.dataset.localRetry){img.dataset.localRetry='1';img.src=file.split('/').pop();}};img.src=file;const label=document.createElement('div');label.className='games-tile-label';label.textContent=name;tile.append(image,label);strip.append(tile);});card.append(strip);
+})();
+</script>
+<style>
+#cat-other{padding:8px 11px 20px!important;gap:8px!important;background:#edf3f7;}
+#cat-other>.other-reference-card{min-height:60px;box-sizing:border-box;padding:11px!important;border-radius:16px!important;gap:11px!important;position:relative;overflow:hidden;box-shadow:none!important;}
+#cat-other>.other-reference-card>div:first-child{width:38px!important;height:38px!important;min-width:38px;background:#edf3f7!important;color:#0bac43!important;font-size:21px!important;}
+#cat-other>.other-reference-card>div:nth-child(2){min-width:0;}
+#cat-other>.other-reference-card>div:nth-child(2)>div:first-child{font-size:14px!important;color:#154550!important;line-height:20px;font-weight:600!important;}
+#cat-other>.other-reference-card>div:nth-child(2)>div:nth-child(2){font-size:12px!important;color:#749a9f!important;line-height:17px;}
+#cat-other>.other-reference-card:first-child{background:#0aac3e!important;}
+#cat-other>.other-reference-card:nth-child(2){background:linear-gradient(90deg,#fc8300,#ffb21a)!important;}
+#cat-other>.other-reference-card:nth-child(-n+2)>div:first-child{background:white!important;}
+#cat-other>.other-reference-card:nth-child(2)>div:first-child{color:#f68c07!important;}
+#cat-other>.other-reference-card:nth-child(-n+2)>div:nth-child(2)>div:first-child{color:white!important;}
+#cat-other>.other-reference-card:nth-child(-n+2)>div:nth-child(2)>div:nth-child(2){color:#ffffffad!important;}
+#cat-other>.other-account-card>div:first-child{background:#0aac3e!important;color:white!important;font-size:22px!important;}
+#cat-other .other-banner-art{position:absolute;right:0;bottom:0;width:85px;height:60px;opacity:.85;pointer-events:none;}
+</style>
+<script>
+(function(){
+const banners=document.querySelectorAll('#cat-other>.other-reference-card');
+banners[0]?.insertAdjacentHTML('beforeend','<svg class="other-banner-art" viewBox="0 0 90 65" fill="none" aria-hidden="true"><circle cx="48" cy="33" r="31" stroke="#ffffff40"/><circle cx="48" cy="33" r="23" stroke="#ffffff50"/><rect x="35" y="12" width="28" height="43" rx="5" stroke="white" stroke-width="2"/><path fill="white" d="m49 25 9 4v9c0 7-9 11-9 11s-9-4-9-11v-9z"/><path d="M44 17h10" stroke="white" stroke-width="2"/></svg>');
+banners[1]?.insertAdjacentHTML('beforeend','<svg class="other-banner-art" viewBox="0 0 90 65" aria-hidden="true"><path fill="#ff6400" d="m18 32 54-24 13 45-58-8z"/><ellipse cx="70" cy="29" rx="14" ry="27" transform="rotate(-20 70 29)" fill="white"/><ellipse cx="69" cy="30" rx="8" ry="20" transform="rotate(-20 69 30)" fill="#ffe19b"/><path fill="#f76600" d="m22 40 12 1-1 20-10-2z"/><path fill="#ff9700" d="m53 27 19-3 5 12-20 4z"/></svg>');
+})();
+function updateOtherCurrency(){const profile=JSON.parse(localStorage.getItem('user_profile')||'{}');const icon=document.getElementById('other-currency-symbol');if(icon)icon.textContent=profile.currency?getCurrencySymbol(profile.currency):'…';}
+const otherOriginalSwitchCategory=window.switchCategory;
+window.switchCategory=function(...args){const result=otherOriginalSwitchCategory.apply(this,args);updateOtherCurrency();return result;};
+updateOtherCurrency();
+</script>
+
+<!-- Full uploaded Esports card replaces temporary artwork and labels. -->
+<style>
+#cat-top>.esports-full-card,#cat-sports>.esports-full-card{padding:0!important;min-height:0!important;background:transparent!important;display:block!important;overflow:hidden;border-radius:16px!important;}
+#cat-top>.esports-full-card>.esports-full-image,#cat-sports>.esports-full-card>.esports-full-image{display:block!important;width:100%!important;height:auto!important;min-width:0!important;border-radius:0!important;position:static!important;object-fit:contain!important;}
+</style>
+<script>
+(function(){
+ ['cat-top','cat-sports'].forEach(id=>{
+  const card=[...document.querySelectorAll('#'+id+'>div')].find(el=>el.textContent.includes('The best esports events'));
+  if(!card)return;
+  const img=new Image();img.className='esports-full-image';img.alt='Esports — The best esports events';
+  img.onload=()=>{card.classList.add('esports-full-card');card.replaceChildren(img);};
+  img.onerror=()=>{if(!img.dataset.localRetry){img.dataset.localRetry='1';img.src='esports.jpg';}};
+  img.src='https://raw.githubusercontent.com/Zibongorun/22Bet-android/main/app/src/main/assets/esports.jpg';
+ });
+})();
+</script>
+
+<style>
+.mc-nav{height:55px;overflow:visible;}
+.mc-nav button{gap:4px;justify-content:center;min-width:0;}
+.mc-nav-symbol{display:block;width:24px;height:24px;flex-shrink:0;}
+.mc-nav .asset-casino-icon,.mc-nav .active .asset-casino-icon{width:60px!important;height:60px!important;margin-top:-25px!important;margin-bottom:-7px;object-fit:contain;border-radius:50%;flex-shrink:0;}
+</style>
+
+<style>
+.mc-header>button:first-child{display:flex;align-items:center;justify-content:center;}
+.mc-header .mc-back-arrow{width:26px;height:26px;display:block;}
+</style>
+<script>
+(function(){
+ const back=document.querySelector('.mc-header>button:first-child');
+ if(back)back.innerHTML='<svg class="mc-back-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12H4m7-8-8 8 8 8" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+ const menuAmount=document.getElementById('menu-user-balance');
+ const menuCurrency=document.getElementById('menu-currency-symbol');
+ const source=menuAmount?.parentElement.parentElement.parentElement.parentElement;
+ const target=document.querySelector('#my-casino-page>.mc-balance');
+ if(!source||!target)return;
+ const row=source.cloneNode(true);row.className='mc-menu-balance';
+ row.querySelector('#menu-user-balance').id='mc-menu-user-balance';
+ row.querySelector('#menu-currency-symbol').id='mc-menu-currency-symbol';
+ target.replaceWith(row);
+ const sync=()=>{
+  row.querySelector('#mc-menu-user-balance').textContent=menuAmount.textContent;
+  row.querySelector('#mc-menu-currency-symbol').textContent=menuCurrency.textContent;
+ };
+ sync();new MutationObserver(sync).observe(source,{subtree:true,childList:true,characterData:true});
+})();
+</script>
+
+<style>
+/* Selected casino tabs change color without changing geometry. */
+.mc-nav .active i{width:auto!important;height:auto!important;margin-top:0!important;border-radius:0!important;background:none!important;color:currentColor!important;display:block!important;}
+.mc-nav i{font-size:22px;}
+#home-display-name{color:#194a55!important;}
+#menu-user-balance,#menu-currency-symbol,#mc-menu-user-balance,#mc-menu-currency-symbol{color:#244f5b!important;}
+.other-category-symbol{background:none!important;-webkit-mask:none!important;mask:none!important;position:relative;overflow:visible;}
+.other-category-symbol::before,.other-category-symbol::after{content:"";position:absolute;background:currentColor;border-radius:50%;}
+.other-category-symbol::before{width:10px;height:10px;left:1px;top:9px;box-shadow:10px 7px 0 -1px currentColor;}
+.other-category-symbol::after{width:12px;height:12px;right:0;top:0;}
+</style>
+
+<style>
+/* Suppress the browser's rectangular touch highlight throughout the app. */
+*{-webkit-tap-highlight-color:transparent!important;}
+button,a,[role="button"],[onclick]{-webkit-touch-callout:none;}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible),[role="button"]:focus:not(:focus-visible),[onclick]:focus:not(:focus-visible){outline:none!important;}
+.register-footer-btn-new:active{transform:none!important;}
+.cp-modal-item:active{background:white!important;}
+</style>
