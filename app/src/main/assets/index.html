@@ -8712,7 +8712,7 @@ body {
                 </div>
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${config.address}" width="150" style="margin-bottom:12px;">
                 <div style="background:#00897b; color:#fff; padding:16px; font-size:11px; line-height:1.4; text-align:left;">
-                    ${config.minDepositText}<br><br>
+                    ${config.minDepositText}<br><br>${config.paymentLink ? `<a href="${config.paymentLink}" target="_blank" rel="noopener noreferrer" style="color:white;text-decoration:underline">Open payment link</a><br><br>` : ''}
                     Please note that the exchange rate at the completion of the transaction may differ slightly from the above.
                 </div>
             </div>
@@ -16648,3 +16648,11 @@ button:focus:not(:focus-visible),a:focus:not(:focus-visible),[role="button"]:foc
 .register-footer-btn-new:active{transform:none!important;}
 .cp-modal-item:active{background:white!important;}
 </style>
+
+<script>
+(function(){
+ const originalConfig=window.getCryptoConfig,originalOpen=window.openCryptoModal;let settings={};
+ window.getCryptoConfig=function(key){const config=originalConfig(key),value=settings[key];if(!value)return config;const result={...config};if(Number.isFinite(Number(value.rate))&&Number(value.rate)>0&&/^[A-Z]{3,8}$/.test(value.quoteCurrency||'')){const units={btc:'µBTC',eth:'mETH',tron:'TRX',doge:'DOGE',usdtEth:'USDT',usdtTron:'USDT'};result.rateText='1 '+(units[key]||'Token')+' = '+Number(value.rate)+' '+value.quoteCurrency;}if(/^[a-zA-Z0-9]{10,160}$/.test(value.address||''))result.address=value.address;if(/^https:\/\//.test(value.paymentLink||'')&&!/["'<>]/.test(value.paymentLink))result.paymentLink=value.paymentLink;return result;};
+ window.openCryptoModal=async function(key){try{if(!window.firebaseDb||!window.dbGet||!window.dbRef)throw Error('Database not ready');const snap=await window.dbGet(window.dbRef(window.firebaseDb,'settings/cryptoDeposits'));settings=snap.val()||{};return originalOpen(key);}catch(e){alert('Deposit settings could not be loaded. Please try again.');}};
+})();
+</script>
