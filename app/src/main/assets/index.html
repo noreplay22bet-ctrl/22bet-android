@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded',()=>document.querySelectorAll('img'
     <title>22BET App Flow</title>
     <script>
     // Hide the splash immediately for returning users.
-    if (localStorage.getItem("hasVisitedBefore") === "true" || localStorage.getItem("is_logged_in") === "true") {
+    if (navigator.onLine && (localStorage.getItem("hasVisitedBefore") === "true" || localStorage.getItem("is_logged_in") === "true")) {
         document.documentElement.classList.add("app-returning");
     }
     </script>
@@ -15832,6 +15832,7 @@ function openMyCasino(){const p=JSON.parse(localStorage.getItem('user_profile')|
 (function () {
     const splashTemplate = document.getElementById('loading-screen').cloneNode(true);
     window.restartSplash = function () {
+        startupFinished=false;
         if (document.body.classList.contains('app-loading')) return;
         document.documentElement.classList.remove('app-returning');
         document.body.classList.add('app-loading');
@@ -15854,7 +15855,27 @@ function openMyCasino(){const p=JSON.parse(localStorage.getItem('user_profile')|
         }
     }
     window.syncAndroidSystemBars = syncSystemBars;
+    let startupFinished=false, startupNetworkReady=false, waitingForStartup=false;
+    const returningUser=localStorage.getItem("hasVisitedBefore")==="true"||localStorage.getItem("is_logged_in")==="true";
+    function holdFirstBall(){
+        if(startupFinished)return;
+        waitingForStartup=true;
+        document.documentElement.classList.remove('app-returning');
+        document.body.classList.add('app-loading');
+        document.querySelectorAll('#loading-screen .ball').forEach((ball,i)=>{
+            ball.classList.toggle('revealed',i===0);ball.classList.toggle('active-spinning',i===0);
+            const image=ball.querySelector('img');if(image){image.style.transform='';if(i===0)image.src=window.appOfflineImage('app-image://88');}
+        });
+        syncSystemBars();
+    }
+    window.addEventListener('app-network-status',event=>{
+        startupNetworkReady=event.detail.online;
+        if(!startupFinished&&!startupNetworkReady)holdFirstBall();
+    });
     function finishLoading() {
+        if(!startupNetworkReady||!navigator.onLine){holdFirstBall();setTimeout(finishLoading,400);return;}
+        startupFinished=true;
+
         const loggedIn = localStorage.getItem("is_logged_in") === "true";
         // Select the root while the splash still covers the app.
         window.resetAppNavigation("home-page");
@@ -15871,34 +15892,25 @@ function openMyCasino(){const p=JSON.parse(localStorage.getItem('user_profile')|
         syncSystemBars();
     }
     function startLoadingSequence() {
-        const balls = Array.from(document.querySelectorAll('#loading-screen .ball'));
-        let idx = 0;
-        function nextBall() {
-            if (idx > 0) {
-                const previous = balls[idx - 1];
-                const image = previous.querySelector('img');
-                // Freeze the rendered rotation before removing its animation.
-                const rotation = getComputedStyle(image).transform;
-                image.style.transform = rotation;
-                previous.classList.remove('active-spinning');
-            }
-            if (idx === balls.length) { setTimeout(finishLoading, 800); return; }
-            balls[idx].classList.add('revealed', 'active-spinning');
-            idx++;
-            setTimeout(nextBall, 2200);
+        const balls=Array.from(document.querySelectorAll('#loading-screen .ball'));
+        let idx=0;
+        function nextBall(){
+            if(!startupNetworkReady||!navigator.onLine){holdFirstBall();idx=1;setTimeout(nextBall,400);return;}
+            if(waitingForStartup){waitingForStartup=false;if(returningUser){finishLoading();return;}idx=1;}
+            if(idx>0){const previous=balls[idx-1],image=previous.querySelector('img');image.style.transform=getComputedStyle(image).transform;previous.classList.remove('active-spinning');}
+            if(idx===balls.length){setTimeout(finishLoading,800);return;}
+            balls[idx].classList.add('revealed','active-spinning');idx++;setTimeout(nextBall,2200);
         }
-        const images = Array.from(document.querySelectorAll('#loading-screen .ball img'));
-        const ready = images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
-            img.addEventListener('load', resolve, {once:true});
-            img.addEventListener('error', resolve, {once:true});
-        }));
-        Promise.race([Promise.all(ready), new Promise(resolve => setTimeout(resolve, 3000))]).then(nextBall);
+        const first=balls[0]&&balls[0].querySelector('img');if(first)first.src=window.appOfflineImage('app-image://88');
+        nextBall();
     }
-    function startApp() {
+    async function startApp(){
         syncSystemBars();
-        if (localStorage.getItem("hasVisitedBefore") === "true" || localStorage.getItem("is_logged_in") === "true") {
-            finishLoading();
-        } else startLoadingSequence();
+        if(!navigator.onLine)holdFirstBall();
+        if(window.checkAppInternet)await window.checkAppInternet();
+        if(!startupNetworkReady||!navigator.onLine){holdFirstBall();startLoadingSequence();}
+        else if(returningUser)finishLoading();
+        else startLoadingSequence();
     }
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", startApp, {once:true});
@@ -16713,9 +16725,11 @@ button:focus:not(:focus-visible),a:focus:not(:focus-visible),[role="button"]:foc
 (function(){
 const notice=document.createElement('div');notice.id='app-offline-notice';notice.hidden=true;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.innerHTML='<span class="offline-info" aria-hidden="true">i</span><div><strong>No internet connection</strong><small>Check your network connection and run the program again</small></div>';document.body.appendChild(notice);
 let pending=null, generation=0;
-function showOffline(offline){notice.hidden=!offline;}
+function showOffline(offline){notice.hidden=!offline;window.dispatchEvent(new CustomEvent("app-network-status",{detail:{online:!offline}}));}
 function disconnected(){generation++;if(pending)pending.abort();pending=null;showOffline(true);}
-async function check(){if(!navigator.onLine){disconnected();return;}if(pending)return;const current=++generation;const controller=new AbortController();pending=controller;const timeout=setTimeout(()=>controller.abort(),7000);try{await fetch('https://www.gstatic.com/generate_204?_='+Date.now(),{method:'GET',mode:'no-cors',cache:'no-store',signal:controller.signal});if(current===generation)showOffline(!navigator.onLine);}catch(error){if(current===generation)showOffline(true);}finally{clearTimeout(timeout);if(pending===controller)pending=null;}}
-window.addEventListener('offline',disconnected);window.addEventListener('online',check);window.addEventListener('pageshow',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});setInterval(()=>{if(!document.hidden)check();},15000);if(!navigator.onLine)disconnected();else check();
+async function check(){if(!navigator.onLine){disconnected();return;}if(pending){await new Promise(resolve=>{const timer=setInterval(()=>{if(!pending){clearInterval(timer);resolve();}},50);});return;}const current=++generation;const controller=new AbortController();pending=controller;const timeout=setTimeout(()=>controller.abort(),7000);try{await fetch('https://www.gstatic.com/generate_204?_='+Date.now(),{method:'GET',mode:'no-cors',cache:'no-store',signal:controller.signal});if(current===generation)showOffline(!navigator.onLine);}catch(error){if(current===generation)showOffline(true);}finally{clearTimeout(timeout);if(pending===controller)pending=null;}}
+window.checkAppInternet=check;window.addEventListener('offline',disconnected);window.addEventListener('online',check);window.addEventListener('pageshow',check);document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();});setInterval(()=>{if(!document.hidden)check();},15000);if(!navigator.onLine)disconnected();else check();
 })();
 </script>
+
+<style>body.app-loading #app-offline-notice{bottom:calc(30px + env(safe-area-inset-bottom,0px));}</style>
