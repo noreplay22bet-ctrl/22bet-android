@@ -16656,3 +16656,33 @@ button:focus:not(:focus-visible),a:focus:not(:focus-visible),[role="button"]:foc
  window.openCryptoModal=async function(key){try{if(!window.firebaseDb||!window.dbGet||!window.dbRef)throw Error('Database not ready');const snap=await window.dbGet(window.dbRef(window.firebaseDb,'settings/cryptoDeposits'));settings=snap.val()||{};return originalOpen(key);}catch(e){alert('Deposit settings could not be loaded. Please try again.');}};
 })();
 </script>
+
+<style>
+#account-management-page{background:#eaf1f5!important;}
+#account-management-page>div:first-child{position:sticky!important;top:0;border-bottom:0!important;color:#68979d;}
+#account-management-page>div:first-child>button{color:#68979d!important;padding-left:0!important;}
+#account-management-page>div:first-child>div{color:#68979d!important;font-size:20px!important;font-weight:600!important;}
+#account-management-page>div:nth-child(2){border-radius:0!important;box-shadow:none!important;margin-bottom:12px!important;padding:17px 8px 0!important;}
+#sub-user-account-id{color:#789ca1!important;font-size:12px!important;margin-left:8px;}
+#sub-user-live-balance{color:#164b58!important;font-size:32px!important;font-weight:700!important;margin-left:8px;}
+#account-management-page button[onclick="openDepositModal()"],#account-management-page button[onclick="openWithdrawModal()"]{background:#d9f1e1!important;color:#23a74b!important;border-radius:16px!important;font-weight:600!important;}
+#account-management-page>div[onclick*="openPaymentQueriesPage"]{margin:0 11px 16px!important;padding:11px!important;box-shadow:none!important;border-radius:16px!important;gap:11px!important;}
+#account-management-page>div[onclick*="openPaymentQueriesPage"]>div:first-child{background:#eaf1f5!important;border-radius:50%!important;}
+#account-management-page>div[onclick*="openPaymentQueriesPage"]>div:last-child{color:#214f5a!important;font-size:16px!important;font-weight:400!important;}
+#account-management-page>div[style*="font-size:18px"]{color:#164b58!important;padding:6px 24px 7px!important;}
+#dynamic-transaction-container>div{box-shadow:none!important;}
+#dynamic-transaction-container>div[style*="font-size:13px"]{color:#73999f!important;padding-left:24px!important;}
+#load-archive-btn{background:#d9f1e1!important;color:#23a74b!important;height:42px!important;font-weight:600!important;}
+</style>
+<script>
+(function(){const back=document.querySelector('#account-management-page>div:first-child>button');if(back)back.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12H4m7-8-8 8 8 8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';})();
+</script>
+
+<style>
+#account-management-page>div:nth-child(2){padding-bottom:12px!important;margin-bottom:12px!important;}
+#account-management-page .account-balance-line{margin-bottom:0!important;align-items:center!important;}
+#account-management-page button[onclick="openDepositModal()"],#account-management-page button[onclick="openWithdrawModal()"]{height:46px!important;}
+</style>
+<script>
+(function(){const balance=document.getElementById('sub-user-live-balance');if(balance)balance.parentElement.classList.add('account-balance-line');})();
+</script>
