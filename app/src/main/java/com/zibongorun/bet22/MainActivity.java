@@ -180,6 +180,20 @@ public class MainActivity extends Activity {
                             });
                             return;
                         }
+                        if ("deviceInfo".equals(data.optString("action"))) {
+                            JSONObject info = new JSONObject();
+                            String maker = Build.MANUFACTURER;
+                            String model = Build.MODEL;
+                            info.put("device", model.toLowerCase().startsWith(maker.toLowerCase()) ? model : maker + " " + model);
+                            String[] names = {"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "JELLY_BEAN", "JELLY_BEAN_MR1", "JELLY_BEAN_MR2", "KITKAT", "KITKAT_WATCH", "LOLLIPOP", "LOLLIPOP_MR1", "MARSHMALLOW", "NOUGAT", "NOUGAT_MR1", "OREO", "OREO_MR1", "PIE", "Q", "R", "S", "S_V2", "TIRAMISU", "UPSIDE_DOWN_CAKE", "VANILLA_ICE_CREAM", "BAKLAVA"};
+                            int sdk = Build.VERSION.SDK_INT;
+                            String osName = sdk < names.length ? names[sdk] : "";
+                            info.put("os", "Android " + Build.VERSION.RELEASE + (osName.isEmpty() ? "" : " " + osName) + " (" + sdk + ")");
+                            info.put("installedAt", getPackageManager().getPackageInfo(getPackageName(), 0).firstInstallTime);
+                            String payload = info.toString();
+                            runOnUiThread(() -> web.evaluateJavascript("window.onAppDeviceInfo && window.onAppDeviceInfo(" + payload + ")", null));
+                            return;
+                        }
                         String text = data.optString("text");
                         if (text.length() > 20000) return;
                         if ("copy".equals(data.optString("action"))) {
