@@ -169,6 +169,17 @@ public class MainActivity extends Activity {
                             runOnUiThread(this::applySystemBars);
                             return;
                         }
+                        if ("clearCache".equals(data.optString("action"))) {
+                            runOnUiThread(() -> {
+                                try {
+                                    web.clearCache(true);
+                                    web.evaluateJavascript("window.onAppCacheCleared && window.onAppCacheCleared(true)", null);
+                                } catch (Exception error) {
+                                    web.evaluateJavascript("window.onAppCacheCleared && window.onAppCacheCleared(false)", null);
+                                }
+                            });
+                            return;
+                        }
                         String text = data.optString("text");
                         if (text.length() > 20000) return;
                         if ("copy".equals(data.optString("action"))) {
