@@ -13251,7 +13251,7 @@ window.closeLoginErrorPopup = function() {
 
 
 
-<script src="https://payment-management.mdripon018770.workers.dev/secure-client.js"></script>
+<script src="https://payment-management.mdripon018770.workers.dev/secure-client.js?v=registration-2"></script>
 <script type="module">
 
     import {
@@ -13742,80 +13742,27 @@ window.hidePhoneReg = function() {
 };
 
 
-function submitPhoneRegistration(goalVerified = false) {
-    return openEmailRegistration();
-    window.pendingEmailProfile = null;
-
-    const phone = document.getElementById('phone-number');
-    const missingPhone = !phone.value.trim();
-    phone.closest('.phone-number-box').classList.toggle('phone-field-invalid', missingPhone);
-    let invalid = missingPhone;
-    ['c1', 'c2', 'c4'].forEach(id => {
-        const input = document.getElementById(id);
-        input.closest('.reg-check-row').classList.toggle('phone-check-invalid', !input.checked);
-        invalid = invalid || !input.checked;
-    });
-    if (!document.getElementById('selected-code-input').value || !document.getElementById('currency-select').value || !document.getElementById('phone-country').value) invalid = true;
-    if (invalid) {
-        showPhoneValidationToast();
-        return;
-    }
-    if (!goalVerified) { openRegistrationGoal(() => submitPhoneRegistration(true)); return; }
-    window.tempCountry = document.getElementById('phone-country').value;
-
-    const countryCode = document.getElementById("selected-code-input")?.value || "+1";
-    const phoneInput = document.querySelector('#phone-registration-form input[type="tel"], #phone-registration-form input[placeholder*="phone"]')?.value || "";
-
-    const fullPhoneNumber =
-        countryCode.trim() + " " + phoneInput;
-
-
-    const currencySelect = document.getElementById("currency-select")?.value || "US dollar (USD)";
-
-    const bonusSelect =
-        document.getElementById("bonus-select")?.innerText ||
-        "Reject bonuses";
-
-
-    const randomUser =
-        "18" +
-        Math.floor(
-            1000000 + Math.random() * 9000000
-        );
-
-    const randomPass =
-        Math.random()
-            .toString(36)
-            .slice(-8);
-
-
-    const popupUserEl =
-        document.getElementById("popupUser");
-
-    const popupPassEl =
-        document.getElementById("popupPass");
-
-
-    if (popupUserEl) {
-        popupUserEl.innerText = randomUser;
-    }
-
-    if (popupPassEl) {
-        popupPassEl.innerText = randomPass;
-    }
-
-
-    window.tempPhone = fullPhoneNumber;
-    window.tempCurrency = currencySelect;
-    window.tempBonus = bonusSelect;
-
-
-    const successPopup =
-        document.getElementById("successPopup");
-
-    if (successPopup) {
-        successPopup.style.display = "flex";
-    }
+async function submitPhoneRegistration(goalVerified = false) {
+ if(window.phoneRegistrationBusy)return;
+ const value=id=>document.getElementById(id)?.value.trim()||'';
+ const phone=value('phone-number'),country=value('phone-country'),currency=value('currency-select'),code=value('selected-code-input');
+ let invalid=!/^[0-9 ()-]{5,20}$/.test(phone)||!country||!currency||!code;
+ for(const id of ['c1','c2','c4']){const input=document.getElementById(id);input.closest('.reg-check-row').classList.toggle('phone-check-invalid',!input.checked);invalid=invalid||!input.checked;}
+ if(invalid){showPhoneValidationToast();return;}
+ if(!goalVerified){openRegistrationGoal(()=>submitPhoneRegistration(true));return;}
+ window.phoneRegistrationBusy=true;
+ const button=document.querySelector('#phone-registration-form .register-footer-btn-new');
+ if(button){button.innerText='Please wait…';button.style.pointerEvents='none';}
+ try{
+  const bytes=crypto.getRandomValues(new Uint8Array(12));
+  const password=window.pendingPhonePassword||('Aa1!'+Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join(''));window.pendingPhonePassword=password;
+  const profile=await window.secureRegister({phone:code+' '+phone,country,currency,bonus:document.getElementById('bonus-select')?.innerText||'Reject bonuses',regdate:new Date().toLocaleDateString('en-GB')},password);
+  window.pendingPhonePassword=null;window.secureReady=Promise.resolve();window.pendingEmailProfile=profile;
+  window.tempCountry=country;window.tempPhone=profile.phone;window.tempCurrency=currency;window.tempBonus=profile.bonus;
+  localStorage.setItem('user_profile',JSON.stringify(profile));localStorage.setItem('saved_login_id',profile.acc);localStorage.setItem('saved_login_password',password);
+  document.getElementById('popupUser').innerText=profile.acc;document.getElementById('popupPass').innerText=password;document.getElementById('successPopup').style.display='flex';
+ }catch(error){alert(window.secureRegistrationError?.(error)||error.message||'Registration failed');}
+ finally{window.phoneRegistrationBusy=false;if(button){button.innerText='Register';button.style.pointerEvents='';}}
 }
 
 
@@ -15220,7 +15167,7 @@ async function completeEmailRegistration() {
         const profileEmail = document.getElementById("form-email");
         if (profileEmail) profileEmail.value = email;
     } catch (error) {
-        if (status) status.innerText = "Unable to save your account. Please check your connection and try again.";
+        if (status) status.innerText = window.secureRegistrationError?.(error) || error.message || "Registration failed. Please retry.";
     } finally {
         window.emailRegistrationBusy = false;
         if (button) { button.innerText = "Register"; button.style.pointerEvents = ""; }
