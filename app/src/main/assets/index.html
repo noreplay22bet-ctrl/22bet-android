@@ -10105,7 +10105,7 @@ window.closeLoginErrorPopup = function() {
 };
 </script>
 <script>
-(()=>{const origin='https://payment-management.mdripon018770.workers.dev';let authSDK,auth;async function ready(){const [apps,sdk]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js')]);authSDK=sdk;const app=apps.getApps().find(a=>a.name==='[DEFAULT]')||apps.initializeApp({apiKey:'AIzaSyAsKOo6nJPZWT-DwdmnBR35J0U_feLiYGM',authDomain:'betapp-c96eb.firebaseapp.com',databaseURL:'https://betapp-c96eb-default-rtdb.firebaseio.com',projectId:'betapp-c96eb',storageBucket:'betapp-c96eb.firebasestorage.app',messagingSenderId:'1028599491642',appId:'1:1028599491642:web:1b14aea9673b49eb215903'});auth=sdk.getAuth(app);await sdk.setPersistence(auth,sdk.browserLocalPersistence)}async function request(path,data){const r=await fetch(origin+'/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const raw=await r.text();let o;try{o=JSON.parse(raw)}catch{throw Error('Server returned an invalid response (HTTP '+r.status+'). Please retry.')}if(!r.ok)throw Error(o.error||'Authentication failed');return o}let initialized;const initialize=()=>initialized??=ready().catch(e=>{initialized=null;throw e});window.secureRegistrationError=e=>{const msg=String(e?.message||e||'Registration failed');if(msg.includes('Registration security setup'))return 'Owner panel-এ Activate secure access সম্পন্ন করতে হবে।';if(msg.includes('auth/'))return 'Account authentication failed: '+msg;if(/fetch|network|import/i.test(msg))return 'সার্ভার বা Firebase-এ সংযোগ হয়নি। ইন্টারনেট চালু রেখে আবার চেষ্টা করুন। ('+msg+')';return msg};window.secureLogin=async(id,password)=>{await initialize();let out=await request('customer/login',{uid:id,password});if(out.mustChangePassword){const next=prompt('পুরোনো ডাটাবেজে password প্রকাশ্য ছিল। নতুন, আলাদা password দিন (অন্তত ৮ অক্ষর):');if(!next)throw Error('Password change required');await request('customer/change-password',{uid:id,password,newPassword:next});password=next;out=await request('customer/login',{uid:id,password});localStorage.setItem('saved_login_password',password)}await authSDK.signInWithCustomToken(auth,out.firebaseToken);return {...out.profile,pass:password}};window.secureChangePassword=async(id,password,next)=>{await request('customer/change-password',{uid:id,password,newPassword:next});return window.secureLogin(id,next)};window.secureRegister=async(profile,password)=>{await initialize();let out;const pending=sessionStorage.getItem('pending_secure_registration');if(pending){const saved=JSON.parse(pending);if(saved.profile.phone===profile.phone&&saved.profile.email===profile.email&&saved.profile.country===profile.country&&saved.profile.currency===profile.currency&&saved.password===password)out=await request('customer/login',{uid:saved.uid,password})}if(!out){out=await request('customer/register',{profile,password});sessionStorage.setItem('pending_secure_registration',JSON.stringify({uid:out.uid,password,profile}))}await authSDK.signInWithCustomToken(auth,out.firebaseToken);sessionStorage.removeItem('pending_secure_registration');return {...out.profile,pass:password}};window.secureBootstrap=async()=>{await initialize();const id=localStorage.getItem('saved_login_id'),password=localStorage.getItem('saved_login_password');if(id&&password&&localStorage.getItem('is_logged_in')==='true'){try{const p=await window.secureLogin(id,password);localStorage.setItem('user_profile',JSON.stringify(p))}catch(e){localStorage.setItem('is_logged_in','false');await authSDK.signOut(auth);window.showLoginPage?.();throw e}}else await authSDK.signOut(auth)};window.secureSignOut=()=>auth&&authSDK.signOut(auth);})();
+(()=>{const origin='https://payment-management.mdripon018770.workers.dev';let authSDK,auth;async function ready(){const [apps,sdk]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js')]);authSDK=sdk;const app=apps.getApps().find(a=>a.name==='[DEFAULT]')||apps.initializeApp({apiKey:'AIzaSyAsKOo6nJPZWT-DwdmnBR35J0U_feLiYGM',authDomain:'betapp-c96eb.firebaseapp.com',databaseURL:'https://betapp-c96eb-default-rtdb.firebaseio.com',projectId:'betapp-c96eb',storageBucket:'betapp-c96eb.firebasestorage.app',messagingSenderId:'1028599491642',appId:'1:1028599491642:web:1b14aea9673b49eb215903'});auth=sdk.getAuth(app);await sdk.setPersistence(auth,sdk.browserLocalPersistence)}async function request(path,data){const r=await fetch(origin+'/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const raw=await r.text();let o;try{o=JSON.parse(raw)}catch{throw Error('Server returned an invalid response (HTTP '+r.status+'). Please retry.')}if(!r.ok)throw Error(o.error||'Authentication failed');return o}let initialized;const initialize=()=>initialized??=ready().catch(()=>ready()).catch(e=>{initialized=null;throw e});window.secureRegistrationError=e=>{const msg=String(e?.message||e||'Registration failed');if(msg.includes('Registration security setup'))return 'Owner panel-এ Activate secure access সম্পন্ন করতে হবে।';if(msg.includes('auth/'))return 'Account authentication failed: '+msg;if(/fetch|network|import/i.test(msg))return 'সার্ভার বা Firebase-এ সংযোগ হয়নি। ইন্টারনেট চালু রেখে আবার চেষ্টা করুন। ('+msg+')';return msg};window.secureLogin=async(id,password)=>{await initialize();let out=await request('customer/login',{uid:id,password});if(out.mustChangePassword){const next=prompt('পুরোনো ডাটাবেজে password প্রকাশ্য ছিল। নতুন, আলাদা password দিন (অন্তত ৮ অক্ষর):');if(!next)throw Error('Password change required');await request('customer/change-password',{uid:id,password,newPassword:next});password=next;out=await request('customer/login',{uid:id,password});localStorage.setItem('saved_login_password',password)}await authSDK.signInWithCustomToken(auth,out.firebaseToken);return {...out.profile,pass:password}};window.secureChangePassword=async(id,password,next)=>{await request('customer/change-password',{uid:id,password,newPassword:next});return window.secureLogin(id,next)};window.secureRegister=async(profile,password)=>{await initialize();let out;const pending=sessionStorage.getItem('pending_secure_registration');if(pending){const saved=JSON.parse(pending);if(saved.profile.phone===profile.phone&&saved.profile.email===profile.email&&saved.profile.country===profile.country&&saved.profile.currency===profile.currency&&saved.password===password)out=await request('customer/login',{uid:saved.uid,password})}if(!out){out=await request('customer/register',{profile,password});sessionStorage.setItem('pending_secure_registration',JSON.stringify({uid:out.uid,password,profile}))}await authSDK.signInWithCustomToken(auth,out.firebaseToken);sessionStorage.removeItem('pending_secure_registration');return {...out.profile,pass:password}};window.secureBootstrap=async()=>{await initialize();const id=localStorage.getItem('saved_login_id'),password=localStorage.getItem('saved_login_password');if(id&&password&&localStorage.getItem('is_logged_in')==='true'){try{const p=await window.secureLogin(id,password);localStorage.setItem('user_profile',JSON.stringify(p))}catch(e){localStorage.setItem('is_logged_in','false');await authSDK.signOut(auth);window.showLoginPage?.();throw e}}else await authSDK.signOut(auth)};window.secureSignOut=()=>auth&&authSDK.signOut(auth);})();
 </script>
 <script type="module">
     import {
@@ -10449,26 +10449,69 @@ window.hidePhoneReg = function() {
     }
 };
 async function submitPhoneRegistration(goalVerified = false) {
- if(window.phoneRegistrationBusy)return;
- const value=id=>document.getElementById(id)?.value.trim()||'';
- const phone=value('phone-number'),country=value('phone-country'),currency=value('currency-select'),code=value('selected-code-input');
- let invalid=!/^[0-9 ()-]{5,20}$/.test(phone)||!country||!currency||!code;
- for(const id of ['c1','c2','c4']){const input=document.getElementById(id);input.closest('.reg-check-row').classList.toggle('phone-check-invalid',!input.checked);invalid=invalid||!input.checked;}
- if(invalid){showPhoneValidationToast();return;}
- if(!goalVerified){openRegistrationGoal(()=>submitPhoneRegistration(true));return;}
- window.phoneRegistrationBusy=true;
- const button=document.querySelector('#phone-registration-form .register-footer-btn-new');
- if(button){button.innerText='Please wait…';button.style.pointerEvents='none';}
- try{
-  const bytes=crypto.getRandomValues(new Uint8Array(12));
-  const password=window.pendingPhonePassword||('Aa1!'+Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join(''));window.pendingPhonePassword=password;
-  const profile=await window.secureRegister({phone:code+' '+phone,country,currency,bonus:document.getElementById('bonus-select')?.innerText||'Reject bonuses',regdate:new Date().toLocaleDateString('en-GB')},password);
-  window.pendingPhonePassword=null;window.secureReady=Promise.resolve();window.pendingEmailProfile=profile;
-  window.tempCountry=country;window.tempPhone=profile.phone;window.tempCurrency=currency;window.tempBonus=profile.bonus;
-  localStorage.setItem('user_profile',JSON.stringify(profile));localStorage.setItem('saved_login_id',profile.acc);localStorage.setItem('saved_login_password',password);
-  document.getElementById('popupUser').innerText=profile.acc;document.getElementById('popupPass').innerText=password;document.getElementById('successPopup').style.display='flex';
- }catch(error){alert(window.secureRegistrationError?.(error)||error.message||'Registration failed');}
- finally{window.phoneRegistrationBusy=false;if(button){button.innerText='Register';button.style.pointerEvents='';}}
+window.pendingEmailProfile = null;
+const phone = document.getElementById('phone-number');
+const missingPhone = !phone.value.trim();
+phone.closest('.phone-number-box').classList.toggle('phone-field-invalid', missingPhone);
+let invalid = missingPhone;
+['c1', 'c2', 'c4'].forEach(id => {
+const input = document.getElementById(id);
+input.closest('.reg-check-row').classList.toggle('phone-check-invalid', !input.checked);
+invalid = invalid || !input.checked;
+});
+if (!document.getElementById('selected-code-input').value || !document.getElementById('currency-select').value || !document.getElementById('phone-country').value) invalid = true;
+if (invalid) {
+showPhoneValidationToast();
+return;
+}
+if (!goalVerified) { openRegistrationGoal(() => submitPhoneRegistration(true)); return; }
+window.tempCountry = document.getElementById('phone-country').value;
+const countryCode = document.getElementById("selected-code-input")?.value || "+1";
+const phoneInput = document.querySelector('#phone-registration-form input[type="tel"], #phone-registration-form input[placeholder*="phone"]')?.value || "";
+const fullPhoneNumber =
+countryCode.trim() + " " + phoneInput;
+const currencySelect = document.getElementById("currency-select")?.value || "US dollar (USD)";
+const bonusSelect =
+document.getElementById("bonus-select")?.innerText ||
+"Reject bonuses";
+if(window.phoneRegistrationBusy)return;
+window.phoneRegistrationBusy=true;
+const button=document.querySelector('#phone-registration-form .register-footer-btn-new');
+if(button){button.innerText='Please wait…';button.style.pointerEvents='none';}
+let registered;
+const randomPass=window.pendingPhonePassword||Array.from(crypto.getRandomValues(new Uint8Array(8)),n=>'abcdefghijklmnopqrstuvwxyz0123456789'[n%36]).join('');
+window.pendingPhonePassword=randomPass;
+try{
+registered=await window.secureRegister({phone:fullPhoneNumber,country:window.tempCountry,currency:currencySelect,bonus:bonusSelect,regdate:new Date().toLocaleDateString('en-GB')},randomPass);
+window.pendingEmailProfile=registered;window.pendingPhonePassword=null;
+window.secureReady=Promise.resolve();
+localStorage.setItem('user_profile',JSON.stringify(registered));
+localStorage.setItem('saved_login_id',registered.acc);localStorage.setItem('saved_login_password',randomPass);
+}catch(error){
+let status=document.getElementById('phone-registration-error');
+if(!status){status=document.createElement('div');status.id='phone-registration-error';status.setAttribute('role','status');status.style.cssText='color:#b42318;padding:8px;text-align:center';button?.before(status);}
+status.textContent=window.secureRegistrationError?.(error)||error.message;return;
+}finally{window.phoneRegistrationBusy=false;if(button){button.innerText='Register';button.style.pointerEvents='';}}
+document.getElementById('phone-registration-error')?.remove();
+const randomUser=registered.acc;
+const popupUserEl =
+document.getElementById("popupUser");
+const popupPassEl =
+document.getElementById("popupPass");
+if (popupUserEl) {
+popupUserEl.innerText = randomUser;
+}
+if (popupPassEl) {
+popupPassEl.innerText = randomPass;
+}
+window.tempPhone = fullPhoneNumber;
+window.tempCurrency = currencySelect;
+window.tempBonus = bonusSelect;
+const successPopup =
+document.getElementById("successPopup");
+if (successPopup) {
+successPopup.style.display = "flex";
+}
 }
 function nextRegistration() {
     const popupUserEl =
