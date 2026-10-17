@@ -5787,174 +5787,7 @@ function closeAccountManagementPage() {
         appBack();
     }
 }
-function loadUserTransactionHistory(userId, currencySymbol, userCurrency) {
-    const container = document.getElementById("dynamic-transaction-container");
-    if (!container) return;
-    container.innerHTML = `<div style="padding:10px 16px; font-size:13px; color:#777;">Loading history...</div>`;
-    if (!window.firebaseDb || typeof window.dbGet !== "function" || typeof window.dbRef !== "function") {
-        container.innerHTML = `<div style="padding:10px 16px; font-size:13px; color:#777;">No transaction history found.</div>`;
-        return;
-    }
-    window.dbGet(window.dbRef(window.firebaseDb, "users/" + userId + "/transactions"))
-        .then((snapshot) => {
-            if (!snapshot.exists()) {
-                container.innerHTML = `<div style="padding:10px 16px; font-size:13px; color:#777;">No transaction history found.</div>`;
-                return;
-            }
-            const txData = snapshot.val();
-            let txArray = [];
-            if (Array.isArray(txData)) {
-                txArray = txData;
-            } else if (typeof txData === "object") {
-                txArray = Object.values(txData);
-            }
-            if (txArray.length === 0) {
-                container.innerHTML = `<div style="padding:10px 16px; font-size:13px; color:#777;">No transaction history found.</div>`;
-                return;
-            }
-            let groupedByDate = {};
-            txArray.forEach(tx => {
-                let timestamp = tx.time || tx.timestamp || Date.now();
-                let dateObj = new Date(timestamp);
-                let day = String(dateObj.getDate()).padStart(2, '0');
-                let month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                let year = dateObj.getFullYear();
-                let dateStr = `${day}.${month}.${year}`;
-                let hours = dateObj.getHours();
-                let minutes = dateObj.getMinutes();
-                let ampm = hours >= 12 ? 'pm' : 'am';
-                hours = hours % 12;
-                hours = hours ? hours : 12;
-                minutes = minutes < 10 ? '0' + minutes : minutes;
-                let timeStr = `${hours}:${minutes} ${ampm}`;
-                if (!groupedByDate[dateStr]) {
-                    groupedByDate[dateStr] = [];
-                }
-                groupedByDate[dateStr].push({
-                    ...tx,
-                    formattedTime: timeStr
-                });
-            });
-            let htmlContent = "";
-            for (let date in groupedByDate) {
-                htmlContent += `
-                    <div style="
-                        padding:6px 16px 7px;
-                        font-size:13px;
-                        color:#71858a;
-                        font-weight:600;
-                        margin-top:8px;
-                    ">
-                        ${date}
-                    </div>
-                `;
-                groupedByDate[date].forEach(tx => {
-                    let amount = tx.amount || 0;
-                    // ফিক্সড: কারেন্সি ৳ বা BDT না হলে (যেমন € বা $) সরাসরি "Cryptocurrencies" দেখাবে
-                    let isForeign = currencySymbol !== "৳" && currencySymbol !== "BDT";
-                    let paymentMethod = tx.method || (isForeign ? "Cryptocurrencies" : "E-wallets");
-                    let txId = tx.txId || Math.floor(10000000000 + Math.random() * 90000000000);
-                    let sign = amount >= 0 ? "+" : "";
-                    let formattedAmountStr = Number(amount).toFixed(2);
-                    let currencyNameText = "";
-                    if (currencySymbol === "€") currencyNameText = " Euro (EUR)";
-                    else if (currencySymbol === "$") currencyNameText = " USD";
-                    else if (isForeign) currencyNameText = " " + currencySymbol;
-                    htmlContent += `
-                        <div style="
-                            background:#ffffff;
-                            border-radius:14px;
-                            margin:5px 16px;
-                            padding:10px 12px;
-                            display:flex;
-                            align-items:center;
-                            justify-content:space-between;
-                            gap:8px;
-                            box-shadow:0 1px 4px rgba(0,0,0,0.02);
-                            box-sizing:border-box;
-                        ">
-                            <!-- LEFT SECTION: TIME + ICON + TEXT -->
-                            <div style="
-                                display:flex;
-                                align-items:center;
-                                gap:8px;
-                                flex:1;
-                                min-width:0;
-                            ">
-                                <!-- TIME -->
-                                <div style="
-                                    font-size:11px;
-                                    color:#71858a;
-                                    font-weight:500;
-                                    white-space:nowrap;
-                                    min-width:50px;
-                                    text-align:left;
-                                ">
-                                    ${tx.formattedTime}
-                                </div>
-                                <!-- GREEN PLUS CIRCLE -->
-                                <div style="
-                                    width:22px;
-                                    height:22px;
-                                    min-width:22px;
-                                    border-radius:50%;
-                                    background:#39b85a;
-                                    color:#ffffff;
-                                    display:flex;
-                                    align-items:center;
-                                    justify-content:center;
-                                    font-size:15px;
-                                    font-weight:700;
-                                    line-height:22px;
-                                ">
-                                    +
-                                </div>
-                                <!-- TRANSACTION TEXT -->
-                                <div style="
-                                    font-size:12px;
-                                    color:#263c42;
-                                    line-height:1.35;
-                                    font-weight:400;
-                                    word-break:break-word;
-                                    min-width:0;
-                                ">
-                                    Receipt of payment No. ${txId} made using "${paymentMethod}", payment amount: ${formattedAmountStr}${currencyNameText}
-                                </div>
-                            </div>
-                            <!-- RIGHT AMOUNT -->
-                            <div style="
-                                font-size:14px;
-                                font-weight:700;
-                                color:#39a852;
-                                white-space:nowrap;
-                                margin-left:4px;
-                            ">
-                                ${sign}${amount} ${currencySymbol}
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            container.innerHTML = htmlContent;
-        })
-        .catch(err => {
-            console.error("Failed to load transactions:", err);
-            container.innerHTML = `<div style="padding:10px 16px; font-size:13px; color:#777;">No transaction history found.</div>`;
-        });
-}
-function loadAccountArchive() {
-    const loadBtn = document.getElementById("load-archive-btn");
-    const alertBox = document.getElementById("no-archive-alert");
-    // প্রথমে বাটন হাইড হবে এবং অ্যালার্ট শো করবে
-    if (loadBtn) loadBtn.style.display = "none";
-    if (alertBox) alertBox.style.display = "flex";
-    // ৩ সেকেন্ড (3000 মিলিভসেকেন্ড) পর অ্যালার্ট বক্সটি অটোমেটিক হাইড হয়ে যাবে
-    setTimeout(() => {
-        if (alertBox) {
-            alertBox.style.display = "none";
-        }
-    }, 3000); // সময় কমাতে বা বাড়াতে চাইলে এখানে ৩০০০ এর জায়গায় মান পরিবর্তন করতে পারেন (যেমন ২০০০ মানে ২ সেকেন্ড)
-}
+
 function openDepositModal() {
     if (typeof showDepositPage === "function") {
         closeAccountManagementPage();
@@ -10224,6 +10057,7 @@ function startLiveBalanceListener() {
                 }
                 const profile =
                     {...snapshot.val(),pass:localStorage.getItem('saved_login_password')||''};
+                window.syncPaymentInbox?.(profile);
                 /* =====================================
                    SAVE LATEST FIREBASE PROFILE
                 ===================================== */
@@ -11402,46 +11236,9 @@ async function shareInfo() {
    5. GLOBAL APP BACK & HISTORY SYSTEM
    ========================================= */
 // Mobile navigation history is initialized in the final script below.
-function showMessagesPage() {
-    switchPage('messages-page');
-    let msgs = JSON.parse(localStorage.getItem('user_messages')) || [];
-    let container = document.getElementById('messages-container');
-    if (container) {
-        container.innerHTML = "";
-        if (msgs.length === 0) {
-            container.innerHTML = `<div style="text-align:center; color:#888; margin-top:40px;">No messages available</div>`;
-            return;
-        }
-        msgs.forEach((msg, index) => {
-            container.innerHTML += `
-                <div style="background:#fff; padding:15px; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.04); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size:12px; color:#888;">${msg.date}</div>
-                    <div style="font-size:16px; font-weight:700; color:#1b364d;">${msg.title}</div>
-                    <div style="font-size:14px; color:#555; line-height:1.4;">${msg.body}</div>
-                    ${msg.btnText ? `<button style="margin-top:5px; background:#3498db; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">${msg.btnText}</button>` : ''}
-                </div>
-            `;
-            msgs[index].read = true;
-        });
-        localStorage.setItem('user_messages', JSON.stringify(msgs));
-        updateMessageBadge();
-    }
-}
-function updateMessageBadge() {
-    let msgs = JSON.parse(localStorage.getItem('user_messages')) || [];
-    let unreadCount = msgs.filter(m => !m.read).length;
-    let badge = document.getElementById('msg-badge');
-    if (badge) {
-        if (unreadCount > 0) {
-            badge.style.display = 'inline-block';
-            badge.innerText = unreadCount;
-        } else {
-            badge.style.display = 'none';
-        }
-    }
-}
 function confirmLogout(saveDetails) {
     window.directSignOut?.().catch(()=>{});
+    setTimeout(()=>window.syncPaymentInbox?.({}),0);
     hideLogoutPopup();
     /* =========================================
        🔴 STOP LIVE BALANCE LISTENER
@@ -11654,6 +11451,39 @@ function goBackFromSettings() {
         }
     }
 }
+</script><div id="messages-page" style="display:none"><header><button id="payment-message-back" type="button" aria-label="Back">←</button><h1>Messages</h1><button id="payment-messages-delete" type="button" aria-label="Delete all messages"><i class="fa-solid fa-trash-can"></i></button></header><p id="payment-message-status" role="status"></p><div id="messages-container"></div></div>
+<div id="payment-delete-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="payment-delete-title"><section><h2 id="payment-delete-title">Attention</h2><p>Are you sure you want to delete all messages?</p><button id="payment-delete-no" type="button">No</button><button id="payment-delete-yes" type="button">Yes</button></section></div>
+<style>#messages-page{position:fixed;inset:0;z-index:999;background:#edf3f7;color:#194c56;font-family:Arial,sans-serif;overflow-y:auto;padding-bottom:calc(85px + env(safe-area-inset-bottom));box-sizing:border-box}#messages-page *{box-sizing:border-box}#messages-page header{height:60px;position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;background:white;color:#719ca2;padding:0 17px;border-bottom:1px solid #e1e8ec}#messages-page header h1{font-size:21px;font-weight:600;margin:0}#messages-page button{border:0;background:none;color:inherit;cursor:pointer}#messages-page header button{font-size:24px;padding:8px}#messages-page button:disabled{opacity:.4}#messages-container{padding:9px 13px 14px;display:flex;flex-direction:column;gap:9px}.pm-card{background:white;border-radius:21px;padding:19px 18px;color:#194c56}.pm-date{display:block;color:#7c9ea3;font-size:15px;margin-bottom:13px}.pm-card h2{font-size:20px;line-height:1.28;font-weight:600;margin:0 0 12px;overflow-wrap:anywhere}.pm-card p{font-size:15px;line-height:1.35;color:#7c9ea3;margin:0}.pm-card .pm-note{margin-top:8px}.pm-empty{text-align:center;color:#78999f;font:14px Arial;padding:22px 14px}#payment-message-status{color:#bc3540;font:13px Arial;margin:0 18px}#payment-delete-dialog{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0005;color:#194c56;font-family:Arial,sans-serif}#payment-delete-dialog[hidden]{display:none}#payment-delete-dialog section{width:80%;max-width:340px;background:white;border-radius:23px;overflow:hidden;text-align:center}#payment-delete-dialog h2{font-size:21px;color:#17b24b;margin:22px 12px 12px}#payment-delete-dialog p{font-size:17px;line-height:1.35;margin:0 18px 20px}#payment-delete-dialog button{display:block;width:100%;border:0;border-top:1px solid #dde6e8;padding:16px;background:white;color:#17b24b;font:600 18px Arial}.pt-day{padding:18px 26px 8px;color:#7c9ea3;font:600 15px Arial}.pt-card{display:flex;align-items:center;gap:9px;background:white;border-radius:22px;margin:4px 13px 12px;padding:17px 13px;color:#254e56;font:13px Arial}.pt-card time{font-size:12px;color:#7c9ea3}.pt-sign{flex-shrink:0;border-radius:50%;background:#42b86a;color:white;font-size:18px;text-align:center;width:18px;height:18px;line-height:18px}.pt-card p{margin:0;line-height:1.3;overflow-wrap:anywhere;flex:1}.pt-card strong{font-size:14px;color:#42b86a;white-space:nowrap;font-weight:600}.pt-card .pt-debit{color:#c24949}.pt-card .pt-sign.pt-debit{background:#c24949;color:white}
+</style><script id="payment-inbox">(()=>{
+const $=id=>document.getElementById(id),uid=()=>localStorage.getItem('is_logged_in')==='true'?localStorage.getItem('saved_login_id')||'':'';
+($('app-shell')||document.body).append($('messages-page'));document.body.append($('payment-delete-dialog'));
+let account='',messages={},states={},profile={},fetched='',saving=false,selected=[],historyRows=[],historyLimit=20,historyCurrency='BDT',historySymbol='৳',historyStamp='';
+const date=t=>new Date(Number(t)||0),day=t=>{const d=date(t);return [d.getDate(),d.getMonth()+1,d.getFullYear()].map((x,i)=>i<2?String(x).padStart(2,'0'):x).join('.')},clock=t=>date(t).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const currency=v=>String(v||'BDT').match(/\b[A-Z]{3}\b/)?.[0]||'BDT',money=(a,c)=>Number(a||0).toFixed(new Intl.NumberFormat('en',{style:'currency',currency:currency(c)}).resolvedOptions().maximumFractionDigits);
+window.paymentType=t=>/crypto|bitcoin|tether|usdt|\bbtc\b|\beth\b|\btrx\b|doge|tron|litecoin/i.test(String(t.paymentCategory||t.channel||t.method||''))?'Cryptocurrency':'E-wallets';
+function node(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+function own(){return uid()&&account===uid()}
+function list(){return own()?Object.values(messages).filter(m=>!states[m.id]?.deletedAt).sort((a,b)=>b.time-a.time||a.id.localeCompare(b.id)):[]}
+function open(){return $('messages-page')?.style.display==='block'}
+function badge(){const count=list().filter(m=>!states[m.id]?.readAt).length;const b=$('msg-badge');if(b){b.textContent=count>99?'99+':String(count);b.style.display=count?'inline-flex':'none'};const icon=b?.parentElement;if(icon){icon.onclick=window.showMessagesPage;icon.setAttribute('role','button');icon.setAttribute('aria-label','Messages'+(count?', '+count+' unread':''));icon.tabIndex=0;icon.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')window.showMessagesPage()}}}
+function render(){const root=$('messages-container');if(!root)return;root.replaceChildren();const rows=list();$('payment-messages-delete').disabled=!rows.length||saving;if(!rows.length){root.append(node('p','pm-empty','No messages available'));return}for(const m of rows){const card=node('article','pm-card');card.append(node('time','pm-date',day(m.time)+' ('+clock(m.time)+')'));const amount=money(m.amount,m.currency)+' '+currency(m.currency),kind=m.kind==='withdrawal'?'Withdrawal':'Deposit',approved=m.status==='approved',status=approved?'Approved!':m.status==='cancelled'?'Cancelled!':'Rejected!',channel=window.paymentType(m)==='Cryptocurrency'?'cryptocurrency':'epayment';card.append(node('h2','',kind+' '+(approved?'approved':'rejected')+' in the amount of '+amount+' via '+channel+' ('+status+')'));card.append(node('p','',kind+' transaction in the amount of '+amount+' via '+channel+' '+(approved?'approved':'rejected')+' by operator!'));if(m.note)card.append(node('p','pm-note',m.note));root.append(card)}}
+async function state(ids,action){if(saving||!own()||!ids.length)return;const owner=account,prior=structuredClone(states),stamp=Date.now();let done=false;saving=true;for(const id of ids)states[id]={...states[id],[action==='delete'?'deletedAt':'readAt']:stamp};badge();render();try{for(let i=0;i<ids.length;i+=200)await window.paymentInboxAPI('customer/messages/state',{ids:ids.slice(i,i+200),action});done=true}catch(e){if(owner===account){states=prior;badge();render();$('payment-message-status').textContent=e.message||'Could not save messages. Try again.'}}finally{saving=false;if(owner===account){render();if(done&&open())markRead()}}}
+async function markRead(){const ids=list().filter(m=>!states[m.id]?.readAt).map(m=>m.id);await state(ids,'read')}
+async function refresh(){if(!own()||!window.paymentInboxAPI)return;const owner=account;try{const out=await window.paymentInboxAPI('customer/messages');if(owner!==uid()||owner!==account)return;for(const m of out)messages[m.id]=m;badge();if(open()){render();markRead()}}catch(e){if(open())$('payment-message-status').textContent=e.message||'Could not load messages'}}
+window.showMessagesPage=function(){if(!uid()){window.showLogin?.();return}window.syncPaymentInbox(profile);window.switchPage('messages-page');$('payment-message-status').textContent='';render();markRead();refresh()};
+window.updateMessageBadge=badge;
+window.closePaymentDelete=()=>{$('payment-delete-dialog').hidden=true};
+window.syncPaymentInbox=function(p){const id=uid();if(account!==id){account=id;messages={};states={};profile={};fetched='';historyStamp='';window.closePaymentDelete();$('messages-container').replaceChildren()}if(!id){badge();return}if(p?.acc&&String(p.acc)===id){profile=p;messages={...messages,...(p.paymentMessages||{})};states=structuredClone(p.paymentMessageState||{});for(const [key,t]of Object.entries(p.transactions||{})){if(!t||t.type!=='deposit'&&t.kind!=='deposit')continue;if(Object.values(messages).some(m=>m.requestId===t.txId))continue;const mid='request_'+(t.txId||key)+'_approved';messages[mid]={id:mid,requestId:t.txId||key,kind:'deposit',status:'approved',amount:t.amount,currency:t.currency||p.currency,method:t.method,paymentCategory:t.paymentCategory,time:t.time||t.timestamp||0}}const balance=$('sub-user-live-balance');if(balance)balance.textContent=String(p.balance??0)+' '+(window.getCurrencySymbol?.(p.currency)||p.currency||'৳');const stamp=JSON.stringify(p.transactions||{});if(stamp!==historyStamp){historyStamp=stamp;historyRows=Object.entries(p.transactions||{}).map(([key,t])=>({...t,key}));if($('account-management-page')?.style.display!=='none')renderHistory()}}badge();if(open()){render();markRead()}if(window.paymentInboxAPI&&fetched!==id){fetched=id;refresh()}};
+function renderHistory(){const root=$('dynamic-transaction-container');if(!root)return;root.replaceChildren();const rows=historyRows.filter(t=>!t.status||t.status==='approved').sort((a,b)=>Number(b.time||b.timestamp||0)-Number(a.time||a.timestamp||0));if(!rows.length)root.append(node('p','pm-empty','No transaction history found.'));let last='';for(const t of rows.slice(0,historyLimit)){const stamp=t.time||t.timestamp||0,d=day(stamp);if(d!==last){root.append(node('div','pt-day',d));last=d}const card=node('article','pt-card'),withdraw=t.type==='withdrawal'||t.kind==='withdrawal'||Number(t.amount)<0,amount=Math.abs(Number(t.amount)||0),code=currency(t.currency||historyCurrency),sign=withdraw?'−':'+';card.append(node('time','',clock(stamp)),node('span','pt-sign'+(withdraw?' pt-debit':''),sign));card.append(node('p','',(withdraw?'Withdrawal':'Receipt')+' of payment No. '+String(t.txId||t.requestId||t.key)+' made using "'+window.paymentType(t)+'", payment amount: '+money(amount,code)+' '+code));card.append(node('strong',withdraw?'pt-debit':'',sign+money(amount,code)+' '+(code===currency(historyCurrency)?historySymbol:code)));root.append(card)}const more=$('load-archive-btn');if(more)more.style.display=rows.length>historyLimit?'block':'none'}
+window.loadUserTransactionHistory=async function(id,symbol,code){historyCurrency=code||'BDT';historySymbol=symbol||'৳';historyLimit=20;const root=$('dynamic-transaction-container');if(root)root.textContent='Loading history…';try{const snap=await window.dbGet(window.dbRef(window.firebaseDb,'users/'+id+'/transactions'));if(id!==uid())return;historyRows=Object.entries(snap.val()||{}).map(([key,t])=>({...t,key}));renderHistory()}catch{if(root)root.textContent='Could not load history. Try again.'}};
+window.loadAccountArchive=function(){historyLimit+=20;renderHistory()};
+$('payment-messages-delete').onclick=()=>{selected=list().map(m=>m.id);if(selected.length){$('payment-delete-dialog').hidden=false;$('payment-delete-no').focus()}};
+$('payment-delete-no').onclick=window.closePaymentDelete;$('payment-delete-yes').onclick=async()=>{window.closePaymentDelete();await state(selected,'delete')};$('payment-message-back').onclick=()=>window.appBack?.();
+$('payment-delete-dialog').addEventListener('keydown',e=>{if(e.key==='Escape')window.closePaymentDelete();if(e.key==='Tab'){e.preventDefault();(document.activeElement===$('payment-delete-no')?$('payment-delete-yes'):$('payment-delete-no')).focus()}});
+window.addEventListener('payment-inbox-back',window.closePaymentDelete);
+setInterval(()=>{if(account!==uid())window.syncPaymentInbox({});else if(own()&&!fetched&&window.paymentInboxAPI){fetched=account;refresh()}badge()},2000);
+window.initMessages=()=>{try{window.syncPaymentInbox(JSON.parse(localStorage.getItem('user_profile')||'{}'))}catch{}};window.initMessages()
+})();
 </script>
 <script>
 // =====================================================
@@ -11975,6 +11805,7 @@ function openMyCasino(){const p=JSON.parse(localStorage.getItem('user_profile')|
     window.androidHandleBack = function () {
         if (document.body.classList.contains("app-loading")) return true;
         if (pendingBack) return true;
+        const paymentDialog=document.getElementById('payment-delete-dialog');if(paymentDialog&&!paymentDialog.hidden){window.closePaymentDelete();return true;}
         if (window.confirmRegistrationBack && window.confirmRegistrationBack()) return true;
         const goal = document.getElementById('registration-goal-overlay');
         if (goal && visible(goal)) {cancelRegistrationGoal();return true;}
@@ -13130,6 +12961,7 @@ const uid=()=>localStorage.getItem('saved_login_id')||'';
 const key=()=>uid()+'|'+(localStorage.getItem('saved_login_password')||'');
 async function api(path,data){const r=await fetch(host+'/api/'+path,{method:data?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(data?{body:JSON.stringify(data)}:{})});let o;try{o=await r.json()}catch{throw Error('Deposit server response is unavailable. Check Worker deployment.')} if(!r.ok){if(r.status===401)token='';throw Error(o.error||'সার্ভারের সঙ্গে সংযোগ হয়নি')}return o}
 async function auth(){if(session!==key()){token='';session=key()}if(!token){const o=await api('customer/session',{uid:uid(),idToken:await window.directDepositToken()});token=o.token;accountCurrency=o.currency||'BDT'}const c=await api('public/config');enabled=c.enabled===true}
+window.paymentInboxAPI=async(path,data)=>{await auth();return api(path,data)};
 function close(){panel?.remove();panel=null;stage=0;quote=null;paymentAmount=''}
 function back(){if(busy)return;if(stage===2){amountPage();return}close()}
 function shell(title){if(!panel){panel=document.createElement('section');panel.id='lm-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');document.body.append(panel);history.pushState({localDeposit:true},'')}panel.innerHTML='<header><button type="button" aria-label="Back">←</button><b>'+esc(title)+'</b></header><div class="lm-body"></div>';panel.querySelector('header button').onclick=()=>{if(stage===2)back();else history.back()};return panel.querySelector('.lm-body')}
